@@ -99,19 +99,19 @@
       color: #14c767;
     }
     select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  background: white;
-  font-size: 14px;
-  cursor: pointer;
-}
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
 
-select:focus {
-  border-color: #14c767;
-  outline: none;
-}
+    select:focus {
+      border-color: #14c767;
+      outline: none;
+    }
   </style>
 </head>
 <body>
@@ -131,17 +131,17 @@ select:focus {
 
       <div class="field">
         <label>Ism Familiya</label>
-        <input type="text" id="name" placeholder="Masalan: Abdulloh Rahimov">
+        <input type="text" id="name" placeholder="Masalan: Abdulloh Rahimov" required>
       </div>
 
       <div class="field">
         <label>Telefon raqam</label>
-        <input type="text" id="phone" placeholder="+998 90 000 00 00">
+        <input type="text" id="phone" placeholder="+998 90 000 00 00" required>
       </div>
 
       <div class="field">
         <label>Sinf</label>
-        <select id="grade">
+        <select id="grade" required>
           <option value="">Tanlang</option>
           <option>1-sinf</option>
           <option>2-sinf</option>
@@ -158,29 +158,27 @@ select:focus {
       </div>
 
       <div class="field">
-  <label>Hudud (tuman)</label>
-  <select id="district" required>
-    <option value="">Hududni tanlang</option>
-
-    <option>Shayxontohur tumani</option>
-    <option>Mirobod tumani</option>
-    <option>Mirzo Ulug‘bek tumani</option>
-    <option>Sergeli tumani</option>
-    <option>Olmazor tumani</option>
-    <option>Uchtepa tumani</option>
-    <option>Bektemir tumani</option>
-    <option>Yashnobod tumani</option>
-    <option>Chilonzor tumani</option>
-    <option>Yunusobod tumani</option>
-    <option>Yakkasaroy tumani</option>
-
-    <option>Boshqa viloyat</option>
-  </select>
-</div>
+        <label>Hudud (tuman)</label>
+        <select id="district" required>
+          <option value="">Hududni tanlang</option>
+          <option>Shayxontohur tumani</option>
+          <option>Mirobod tumani</option>
+          <option>Mirzo Ulug‘bek tumani</option>
+          <option>Sergeli tumani</option>
+          <option>Olmazor tumani</option>
+          <option>Uchtepa tumani</option>
+          <option>Bektemir tumani</option>
+          <option>Yashnobod tumani</option>
+          <option>Chilonzor tumani</option>
+          <option>Yunusobod tumani</option>
+          <option>Yakkasaroy tumani</option>
+          <option>Boshqa viloyat</option>
+        </select>
+      </div>
 
       <div class="field">
         <label>Qayerdan bildingiz?</label>
-        <select id="source">
+        <select id="source" required>
           <option value="">Tanlang</option>
           <option>Telegram</option>
           <option>Instagram</option>
@@ -189,7 +187,7 @@ select:focus {
         </select>
       </div>
 
-      <button class="btn-submit" type="submit">
+      <button class="btn-submit" type="submit" id="submitBtn">
         Yuborish 🚀
       </button>
 
@@ -209,11 +207,18 @@ select:focus {
   tg.expand();
 
   const form = document.getElementById("form");
+  const submitBtn = document.getElementById("submitBtn");
 
   form.addEventListener("submit", function(e){
     e.preventDefault();
+    
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Yuborilmoqda...";
+
+    const user_id = tg.initDataUnsafe?.user?.id;
 
     const data = {
+      user_id: user_id,
       name: document.getElementById("name").value,
       phone: document.getElementById("phone").value,
       grade: document.getElementById("grade").value,
@@ -221,12 +226,31 @@ select:focus {
       source: document.getElementById("source").value,
     };
 
-    document.getElementById("formCard").style.display = "none";
-    document.getElementById("success").style.display = "block";
-
-    setTimeout(() => {
-      tg.sendData(JSON.stringify(data));
-    }, 500);
+    fetch("https://botttttttt-production.up.railway.app/api/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    }).then(response => response.json())
+      .then(result => {
+        if (result.ok) {
+          document.getElementById("formCard").style.display = "none";
+          document.getElementById("success").style.display = "block";
+          
+          setTimeout(() => {
+            tg.close();
+          }, 1500);
+        } else {
+          alert("Xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Yuborish 🚀";
+        }
+    }).catch(err => {
+      alert("Xatolik yuz berdi: " + err);
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Yuborish 🚀";
+    });
   });
 </script>
 
