@@ -2,7 +2,8 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ✅ FIX #4: Added viewport-fit=cover for iPhone notch/Dynamic Island -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Ro'yxatdan o'tish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -35,7 +36,18 @@
       color: var(--gray-1);
       font-family: 'Inter', sans-serif;
       font-size: 14px;
+      /* ✅ FIX #3: iOS 100vh bug fix — use min-height with fallback */
       min-height: 100vh;
+      min-height: -webkit-fill-available;
+      /* ✅ FIX #5: Prevent double-scroll in Telegram iOS WebApp */
+      overflow-x: hidden;
+      /* ✅ FIX #4: Safe area padding for notch */
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    html {
+      /* ✅ FIX #3 companion rule */
+      height: -webkit-fill-available;
     }
 
     .wrapper {
@@ -121,7 +133,7 @@
       border-radius: var(--radius-sm);
       border: 1.5px solid var(--gray-4);
       font-family: 'Inter', sans-serif;
-      font-size: 14px;
+      font-size: 16px; /* ✅ FIX: iOS auto-zooms on inputs < 16px — set exactly 16px */
       font-weight: 500;
       color: var(--gray-1);
       background: var(--white);
@@ -129,6 +141,9 @@
       appearance: none;
       -webkit-appearance: none;
       outline: none;
+      /* ✅ FIX: iOS adds inner shadow on inputs */
+      -webkit-box-shadow: none;
+      box-shadow: none;
     }
 
     input::placeholder {
@@ -139,6 +154,7 @@
     input:focus, select:focus {
       border-color: var(--green);
       box-shadow: 0 0 0 3px rgba(20,199,103,0.13);
+      -webkit-box-shadow: 0 0 0 3px rgba(20,199,103,0.13);
     }
 
     /* select arrow */
@@ -165,6 +181,7 @@
       border-color: var(--red);
       background: var(--red-light);
       box-shadow: 0 0 0 3px rgba(229,57,53,0.10);
+      -webkit-box-shadow: 0 0 0 3px rgba(229,57,53,0.10);
     }
 
     .error-msg {
@@ -206,6 +223,8 @@
       transition: opacity 0.15s, transform 0.12s;
       margin-top: 6px;
       letter-spacing: 0.2px;
+      /* ✅ FIX: iOS doesn't apply cursor:pointer to buttons by default */
+      -webkit-tap-highlight-color: transparent;
     }
 
     .btn-submit:active {
@@ -277,6 +296,18 @@
       background: #f0f0f0;
       margin: 4px 0 12px;
     }
+
+    /* ✅ FIX #6: CSS shake animation instead of element.animate() for iOS < 13.4 */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-6px); }
+      40%      { transform: translateX(6px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(4px); }
+    }
+    .shake {
+      animation: shake 0.32s ease;
+    }
   </style>
 </head>
 <body>
@@ -305,13 +336,15 @@
 
       <!-- Ism Familiya -->
       <div class="field" id="f-name">
-        <label>Ism Familiya</label>
+        <label for="name">Ism Familiya</label>
         <div class="input-wrap">
           <input
             type="text"
             id="name"
             placeholder="Masalan: Abdulloh Rahimov"
             autocomplete="off"
+            autocorrect="off"
+            autocapitalize="words"
           >
         </div>
         <span class="error-msg" id="e-name">Ism va familiyani to'liq kiriting (kamida 2 so'z)</span>
@@ -321,14 +354,15 @@
 
       <!-- Telefon -->
       <div class="field" id="f-phone">
-        <label>Telefon raqam</label>
+        <label for="phone">Telefon raqam</label>
         <div class="input-wrap">
           <input
             type="tel"
             id="phone"
             placeholder="+998 90 123 45 67"
             maxlength="17"
-            autocomplete="off"
+            autocomplete="tel"
+            inputmode="tel"
           >
         </div>
         <span class="error-msg" id="e-phone">To'g'ri telefon raqam kiriting (+998XXXXXXXXX)</span>
@@ -338,7 +372,7 @@
 
       <!-- Sinf -->
       <div class="field" id="f-grade">
-        <label>Farzandingiz nechanchi sinfda o'qiydi?</label>
+        <label for="grade">Farzandingiz nechanchi sinfda o'qiydi?</label>
         <div class="select-wrap">
           <select id="grade">
             <option value="">— Sinfni tanlang —</option>
@@ -357,7 +391,7 @@
 
       <!-- Hudud -->
       <div class="field" id="f-district">
-        <label>Hudud (tuman)</label>
+        <label for="district">Hudud (tuman)</label>
         <div class="select-wrap">
           <select id="district">
             <option value="">— Hududni tanlang —</option>
@@ -382,7 +416,7 @@
 
       <!-- Manba -->
       <div class="field" id="f-source">
-        <label>Qayerdan bildingiz?</label>
+        <label for="source">Qayerdan bildingiz?</label>
         <div class="select-wrap">
           <select id="source">
             <option value="">— Tanlang —</option>
@@ -440,7 +474,6 @@
     else if (v.startsWith('8')) v = '+99' + v;
     else if (!v.startsWith('+')) v = v ? '+998' + v : '';
 
-    // format: +998 90 123 45 67
     let digits = v.replace(/\D/g, '');
     if (digits.length > 12) digits = digits.slice(0, 12);
     let formatted = '';
@@ -465,14 +498,14 @@
     updateProgress();
   });
 
-  gradeSelect.addEventListener('change',   () => { validateField(2, false); updateProgress(); });
+  gradeSelect.addEventListener('change',  () => { validateField(2, false); updateProgress(); });
   districtSel.addEventListener('change',  () => { validateField(3, false); updateProgress(); });
   sourceSel.addEventListener('change',    () => { validateField(4, false); updateProgress(); });
 
   /* ── Validators ── */
   function isValidName(v) {
     const parts = v.trim().split(/\s+/);
-    return parts.length >= 2 && parts.every(p => p.length >= 2) && /^[a-zA-ZА-Яа-яёЁҒғҚқҲҳҲҳЎўҚқ'\-\s]+$/u.test(v);
+    return parts.length >= 2 && parts.every(p => p.length >= 2) && /^[a-zA-ZА-Яа-яёЁҒғҚқҲҳЎўʻ'\-\s]+$/u.test(v);
   }
 
   function isValidPhone(v) {
@@ -480,12 +513,8 @@
     return digits.length === 12 && digits.startsWith('998');
   }
 
-  function getVal(i) {
-    return fields[i].el.value.trim();
-  }
-
   function validateField(i, showError = true) {
-    const { el, wrap, err } = fields[i];
+    const { el, wrap } = fields[i];
     const val = el.value.trim();
     let ok = false;
 
@@ -509,9 +538,17 @@
       sourceSel.value !== '',
     ];
     checks.forEach((ok, i) => {
-      const dot = document.getElementById('d' + (i + 1));
-      dot.classList.toggle('filled', ok);
+      document.getElementById('d' + (i + 1)).classList.toggle('filled', ok);
     });
+  }
+
+  /* ✅ FIX #6: CSS-based shake (works on all iOS versions) */
+  function shakeElement(el) {
+    el.classList.remove('shake');
+    // Force reflow so animation restarts if already shaking
+    void el.offsetWidth;
+    el.classList.add('shake');
+    el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
   }
 
   /* ── Submit ── */
@@ -520,21 +557,15 @@
 
     let allOk = true;
     fields.forEach((_, i) => {
-      const ok = validateField(i, true);
-      if (!ok) allOk = false;
+      if (!validateField(i, true)) allOk = false;
     });
 
     if (!allOk) {
-      // Shake first error
       const firstErr = document.querySelector('.field.error');
       if (firstErr) {
-        firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstErr.animate(
-          [{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' },
-           { transform: 'translateX(6px)' }, { transform: 'translateX(-4px)' },
-           { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }],
-          { duration: 320, easing: 'ease' }
-        );
+        /* ✅ FIX #7: iOS doesn't support smooth scrollIntoView — use plain instant scroll */
+        firstErr.scrollIntoView({ block: 'center' });
+        shakeElement(firstErr);
       }
       return;
     }
@@ -542,7 +573,7 @@
     submitBtn.disabled = true;
     submitBtn.innerText = 'Yuborilmoqda...';
 
-    const user_id = tg.initDataUnsafe?.user?.id;
+    const user_id = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
     const data = {
       user_id,
       name:     nameInput.value.trim(),
@@ -557,20 +588,20 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
-      .then(r => r.json())
-      .then(result => {
+      .then(function(r) { return r.json(); })
+      .then(function(result) {
         if (result.ok) {
           document.getElementById('formCard').style.display = 'none';
           document.getElementById('progress').style.display = 'none';
           document.getElementById('success').style.display = 'block';
-          setTimeout(() => tg.close(), 1800);
+          setTimeout(function() { tg.close(); }, 1800);
         } else {
           alert('Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
           submitBtn.disabled = false;
           submitBtn.innerText = 'Yuborish 🚀';
         }
       })
-      .catch(err => {
+      .catch(function(err) {
         alert('Xatolik yuz berdi: ' + err);
         submitBtn.disabled = false;
         submitBtn.innerText = 'Yuborish 🚀';
