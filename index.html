@@ -2,7 +2,6 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <!-- ✅ FIX #4: Added viewport-fit=cover for iPhone notch/Dynamic Island -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Ro'yxatdan o'tish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -36,17 +35,13 @@
       color: var(--gray-1);
       font-family: 'Inter', sans-serif;
       font-size: 14px;
-      /* ✅ FIX #3: iOS 100vh bug fix — use min-height with fallback */
       min-height: 100vh;
       min-height: -webkit-fill-available;
-      /* ✅ FIX #5: Prevent double-scroll in Telegram iOS WebApp */
       overflow-x: hidden;
-      /* ✅ FIX #4: Safe area padding for notch */
       padding-bottom: env(safe-area-inset-bottom);
     }
 
     html {
-      /* ✅ FIX #3 companion rule */
       height: -webkit-fill-available;
     }
 
@@ -56,7 +51,6 @@
       padding: 24px 16px 40px;
     }
 
-    /* ── Header ── */
     .header {
       display: flex;
       flex-direction: column;
@@ -96,7 +90,6 @@
       color: var(--gray-3);
     }
 
-    /* ── Card ── */
     .card {
       background: var(--white);
       border: 1.5px solid #e8e8e8;
@@ -107,7 +100,6 @@
       gap: 4px;
     }
 
-    /* ── Field ── */
     .field {
       display: flex;
       flex-direction: column;
@@ -133,7 +125,7 @@
       border-radius: var(--radius-sm);
       border: 1.5px solid var(--gray-4);
       font-family: 'Inter', sans-serif;
-      font-size: 16px; /* ✅ FIX: iOS auto-zooms on inputs < 16px — set exactly 16px */
+      font-size: 16px;
       font-weight: 500;
       color: var(--gray-1);
       background: var(--white);
@@ -141,7 +133,6 @@
       appearance: none;
       -webkit-appearance: none;
       outline: none;
-      /* ✅ FIX: iOS adds inner shadow on inputs */
       -webkit-box-shadow: none;
       box-shadow: none;
     }
@@ -151,13 +142,23 @@
       font-weight: 400;
     }
 
+    /* Select placeholder kulrang */
+    select.placeholder-active {
+      color: var(--gray-4);
+      font-weight: 400;
+    }
+
+    select option {
+      color: var(--gray-1);
+      font-weight: 500;
+    }
+
     input:focus, select:focus {
       border-color: var(--green);
       box-shadow: 0 0 0 3px rgba(20,199,103,0.13);
       -webkit-box-shadow: 0 0 0 3px rgba(20,199,103,0.13);
     }
 
-    /* select arrow */
     .select-wrap {
       position: relative;
     }
@@ -175,7 +176,6 @@
       border-top: 6px solid var(--gray-3);
     }
 
-    /* ── Error state ── */
     .field.error input,
     .field.error select {
       border-color: var(--red);
@@ -202,13 +202,11 @@
       font-size: 12px;
     }
 
-    /* ── Valid state ── */
     .field.valid input,
     .field.valid select {
       border-color: var(--green);
     }
 
-    /* ── Submit btn ── */
     .btn-submit {
       width: 100%;
       padding: 14px;
@@ -223,7 +221,6 @@
       transition: opacity 0.15s, transform 0.12s;
       margin-top: 6px;
       letter-spacing: 0.2px;
-      /* ✅ FIX: iOS doesn't apply cursor:pointer to buttons by default */
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -237,7 +234,6 @@
       transform: none;
     }
 
-    /* ── Progress dots ── */
     .progress {
       display: flex;
       justify-content: center;
@@ -259,7 +255,6 @@
       border-color: var(--green);
     }
 
-    /* ── Success ── */
     .success {
       display: none;
       text-align: center;
@@ -290,14 +285,12 @@
       font-weight: 500;
     }
 
-    /* ── Divider ── */
     .divider {
       height: 1px;
       background: #f0f0f0;
       margin: 4px 0 12px;
     }
 
-    /* ✅ FIX #6: CSS shake animation instead of element.animate() for iOS < 13.4 */
     @keyframes shake {
       0%,100% { transform: translateX(0); }
       20%      { transform: translateX(-6px); }
@@ -322,7 +315,6 @@
     <p>Formani to'liq va aniq to'ldiring</p>
   </div>
 
-  <!-- Progress dots -->
   <div class="progress" id="progress">
     <div class="dot" id="d1"></div>
     <div class="dot" id="d2"></div>
@@ -374,8 +366,8 @@
       <div class="field" id="f-grade">
         <label for="grade">Farzandingiz nechanchi sinfda o'qiydi?</label>
         <div class="select-wrap">
-          <select id="grade">
-            <option value="">— Sinfni tanlang —</option>
+          <select id="grade" class="placeholder-active">
+            <option value="">Sinfni tanlang</option>
             <option>1-sinf</option><option>2-sinf</option>
             <option>3-sinf</option><option>4-sinf</option>
             <option>5-sinf</option><option>6-sinf</option>
@@ -391,10 +383,10 @@
 
       <!-- Hudud -->
       <div class="field" id="f-district">
-        <label for="district">Hudud (tuman)</label>
+        <label for="district">Qayerda yashasysiz?</label>
         <div class="select-wrap">
-          <select id="district">
-            <option value="">— Hududni tanlang —</option>
+          <select id="district" class="placeholder-active">
+            <option value="">Hududni tanlang</option>
             <option>Shayxontohur tumani</option>
             <option>Mirobod tumani</option>
             <option>Mirzo Ulug'bek tumani</option>
@@ -412,14 +404,12 @@
         <span class="error-msg" id="e-district">Hududni tanlash shart</span>
       </div>
 
-      <div class="divider"></div>
-
-      <!-- Manba -->
+      <!-- Manba — divider olib tashlandi -->
       <div class="field" id="f-source">
-        <label for="source">Qayerdan bildingiz?</label>
+        <label for="source">Biz haqimizda qayerdan bildingiz?</label>
         <div class="select-wrap">
-          <select id="source">
-            <option value="">— Tanlang —</option>
+          <select id="source" class="placeholder-active">
+            <option value="">Do'stlardan</option>
             <option>Telegram</option>
             <option>Instagram</option>
             <option>Do'st orqali</option>
@@ -445,12 +435,10 @@
 </div>
 
 <script>
-  /* ── Telegram init ── */
   const tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand();
 
-  /* ── Refs ── */
   const nameInput     = document.getElementById('name');
   const phoneInput    = document.getElementById('phone');
   const gradeSelect   = document.getElementById('grade');
@@ -467,7 +455,20 @@
     { el: sourceSel,   wrap: 'f-source',   err: 'e-source' },
   ];
 
-  /* ── Phone auto-format ── */
+  /* Select placeholder rang boshqaruvi */
+  function updateSelectColor(sel) {
+    if (sel.value === '') {
+      sel.classList.add('placeholder-active');
+    } else {
+      sel.classList.remove('placeholder-active');
+    }
+  }
+
+  [gradeSelect, districtSel, sourceSel].forEach(sel => {
+    sel.addEventListener('change', () => updateSelectColor(sel));
+  });
+
+  /* Phone auto-format */
   phoneInput.addEventListener('input', function () {
     let v = this.value.replace(/\D/g, '');
     if (v.startsWith('998')) v = '+' + v;
@@ -488,7 +489,7 @@
     updateProgress();
   });
 
-  /* ── Name: faqat harflar ── */
+  /* Name: faqat harflar */
   nameInput.addEventListener('keydown', function (e) {
     if (e.key >= '0' && e.key <= '9') e.preventDefault();
   });
@@ -502,7 +503,7 @@
   districtSel.addEventListener('change',  () => { validateField(3, false); updateProgress(); });
   sourceSel.addEventListener('change',    () => { validateField(4, false); updateProgress(); });
 
-  /* ── Validators ── */
+  /* Validators */
   function isValidName(v) {
     const parts = v.trim().split(/\s+/);
     return parts.length >= 2 && parts.every(p => p.length >= 2) && /^[a-zA-ZА-Яа-яёЁҒғҚқҲҳЎўʻ'\-\s]+$/u.test(v);
@@ -528,7 +529,7 @@
     return ok;
   }
 
-  /* ── Progress ── */
+  /* Progress */
   function updateProgress() {
     const checks = [
       isValidName(nameInput.value.trim()),
@@ -542,16 +543,14 @@
     });
   }
 
-  /* ✅ FIX #6: CSS-based shake (works on all iOS versions) */
   function shakeElement(el) {
     el.classList.remove('shake');
-    // Force reflow so animation restarts if already shaking
     void el.offsetWidth;
     el.classList.add('shake');
     el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
   }
 
-  /* ── Submit ── */
+  /* Submit */
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -563,7 +562,6 @@
     if (!allOk) {
       const firstErr = document.querySelector('.field.error');
       if (firstErr) {
-        /* ✅ FIX #7: iOS doesn't support smooth scrollIntoView — use plain instant scroll */
         firstErr.scrollIntoView({ block: 'center' });
         shakeElement(firstErr);
       }
