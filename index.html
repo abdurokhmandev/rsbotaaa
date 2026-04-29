@@ -142,7 +142,6 @@
       font-weight: 400;
     }
 
-    /* Select placeholder kulrang */
     select.placeholder-active {
       color: var(--gray-4);
       font-weight: 400;
@@ -207,8 +206,14 @@
       border-color: var(--green);
     }
 
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
     .btn-submit {
-      width: 100%;
+      flex: 1;
       padding: 14px;
       background: var(--green);
       color: white;
@@ -219,9 +224,13 @@
       font-weight: 700;
       cursor: pointer;
       transition: opacity 0.15s, transform 0.12s;
-      margin-top: 6px;
       letter-spacing: 0.2px;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-back {
+      background: var(--gray-5);
+      color: var(--gray-2);
     }
 
     .btn-submit:active {
@@ -285,12 +294,6 @@
       font-weight: 500;
     }
 
-    .divider {
-      height: 1px;
-      background: #f0f0f0;
-      margin: 4px 0 12px;
-    }
-
     @keyframes shake {
       0%,100% { transform: translateX(0); }
       20%      { transform: translateX(-6px); }
@@ -300,6 +303,19 @@
     }
     .shake {
       animation: shake 0.32s ease;
+    }
+
+    /* Step animations */
+    .step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .step.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
     }
   </style>
 </head>
@@ -316,7 +332,7 @@
   </div>
 
   <div class="progress" id="progress">
-    <div class="dot" id="d1"></div>
+    <div class="dot filled" id="d1"></div>
     <div class="dot" id="d2"></div>
     <div class="dot" id="d3"></div>
     <div class="dot" id="d4"></div>
@@ -326,102 +342,110 @@
   <div class="card" id="formCard">
     <form id="form" novalidate>
 
-      <!-- Ism Familiya -->
-      <div class="field" id="f-name">
-        <label for="name">Ism Familiya</label>
-        <div class="input-wrap">
-          <input
-            type="text"
-            id="name"
-            placeholder="Masalan: Abdulloh Rahimov"
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="words"
-          >
+      <!-- Step 1: Ism Familiya -->
+      <div class="step active" data-step="0">
+        <div class="field" id="f-name">
+          <label for="name">Ism Familiya</label>
+          <div class="input-wrap">
+            <input
+              type="text"
+              id="name"
+              placeholder="Masalan: Abdulloh Rahimov"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="words"
+            >
+          </div>
+          <span class="error-msg" id="e-name">Ism va familiyani to'liq kiriting (kamida 2 so'z)</span>
         </div>
-        <span class="error-msg" id="e-name">Ism va familiyani to'liq kiriting (kamida 2 so'z)</span>
       </div>
 
-      <div class="divider"></div>
-
-      <!-- Telefon -->
-      <div class="field" id="f-phone">
-        <label for="phone">Telefon raqam</label>
-        <div class="input-wrap">
-          <input
-            type="tel"
-            id="phone"
-            placeholder="+998 90 123 45 67"
-            maxlength="17"
-            autocomplete="tel"
-            inputmode="tel"
-          >
+      <!-- Step 2: Telefon -->
+      <div class="step" data-step="1">
+        <div class="field" id="f-phone">
+          <label for="phone">Telefon raqam</label>
+          <div class="input-wrap">
+            <input
+              type="tel"
+              id="phone"
+              placeholder="+998 90 123 45 67"
+              maxlength="17"
+              autocomplete="tel"
+              inputmode="tel"
+            >
+          </div>
+          <span class="error-msg" id="e-phone">To'g'ri telefon raqam kiriting (+998XXXXXXXXX)</span>
         </div>
-        <span class="error-msg" id="e-phone">To'g'ri telefon raqam kiriting (+998XXXXXXXXX)</span>
       </div>
 
-      <div class="divider"></div>
-
-      <!-- Sinf -->
-      <div class="field" id="f-grade">
-        <label for="grade">Farzandingiz nechanchi sinfda o'qiydi?</label>
-        <div class="select-wrap">
-          <select id="grade" class="placeholder-active">
-            <option value="">Sinfni tanlang</option>
-            <option>1-sinf</option><option>2-sinf</option>
-            <option>3-sinf</option><option>4-sinf</option>
-            <option>5-sinf</option><option>6-sinf</option>
-            <option>7-sinf</option><option>8-sinf</option>
-            <option>9-sinf</option><option>10-sinf</option>
-            <option>11-sinf</option>
-          </select>
+      <!-- Step 3: Sinf -->
+      <div class="step" data-step="2">
+        <div class="field" id="f-grade">
+          <label for="grade">Farzandingiz nechanchi sinfda o'qiydi?</label>
+          <div class="select-wrap">
+            <select id="grade" class="placeholder-active">
+              <option value="">Sinfni tanlang</option>
+              <option>1-sinf</option><option>2-sinf</option>
+              <option>3-sinf</option><option>4-sinf</option>
+              <option>5-sinf</option><option>6-sinf</option>
+              <option>7-sinf</option><option>8-sinf</option>
+              <option>9-sinf</option><option>10-sinf</option>
+              <option>11-sinf</option>
+            </select>
+          </div>
+          <span class="error-msg" id="e-grade">Sinfni tanlash shart</span>
         </div>
-        <span class="error-msg" id="e-grade">Sinfni tanlash shart</span>
       </div>
 
-      <div class="divider"></div>
-
-      <!-- Hudud -->
-      <div class="field" id="f-district">
-        <label for="district">Qayerda yashasysiz?</label>
-        <div class="select-wrap">
-          <select id="district" class="placeholder-active">
-            <option value="">Hududni tanlang</option>
-            <option>Shayxontohur tumani</option>
-            <option>Mirobod tumani</option>
-            <option>Mirzo Ulug'bek tumani</option>
-            <option>Sergeli tumani</option>
-            <option>Olmazor tumani</option>
-            <option>Uchtepa tumani</option>
-            <option>Bektemir tumani</option>
-            <option>Yashnobod tumani</option>
-            <option>Chilonzor tumani</option>
-            <option>Yunusobod tumani</option>
-            <option>Yakkasaroy tumani</option>
-            <option>Boshqa viloyat</option>
-          </select>
+      <!-- Step 4: Hudud -->
+      <div class="step" data-step="3">
+        <div class="field" id="f-district">
+          <label for="district">Qayerda yashaysiz?</label>
+          <div class="select-wrap">
+            <select id="district" class="placeholder-active">
+              <option value="">Hududni tanlang</option>
+              <option>Shayxontohur tumani</option>
+              <option>Mirobod tumani</option>
+              <option>Mirzo Ulug'bek tumani</option>
+              <option>Sergeli tumani</option>
+              <option>Olmazor tumani</option>
+              <option>Uchtepa tumani</option>
+              <option>Bektemir tumani</option>
+              <option>Yashnobod tumani</option>
+              <option>Chilonzor tumani</option>
+              <option>Yunusobod tumani</option>
+              <option>Yakkasaroy tumani</option>
+              <option>Boshqa viloyat</option>
+            </select>
+          </div>
+          <span class="error-msg" id="e-district">Hududni tanlash shart</span>
         </div>
-        <span class="error-msg" id="e-district">Hududni tanlash shart</span>
       </div>
 
-      <!-- Manba — divider olib tashlandi -->
-      <div class="field" id="f-source">
-        <label for="source">Biz haqimizda qayerdan bildingiz?</label>
-        <div class="select-wrap">
-          <select id="source" class="placeholder-active">
-            <option value="">Do'stlardan</option>
-            <option>Telegram</option>
-            <option>Instagram</option>
-            <option>Do'st orqali</option>
-            <option>Boshqa</option>
-          </select>
+      <!-- Step 5: Manba -->
+      <div class="step" data-step="4">
+        <div class="field" id="f-source">
+          <label for="source">Biz haqimizda qayerdan bildingiz?</label>
+          <div class="select-wrap">
+            <select id="source" class="placeholder-active">
+              <option value="">Manbani tanlang</option>
+              <option>Telegram</option>
+              <option>Instagram</option>
+              <option>Do'st orqali</option>
+              <option>Boshqa</option>
+            </select>
+          </div>
+          <span class="error-msg" id="e-source">Manba tanlash shart</span>
         </div>
-        <span class="error-msg" id="e-source">Manba tanlash shart</span>
       </div>
 
-      <button class="btn-submit" type="submit" id="submitBtn">
-        Yuborish 🚀
-      </button>
+      <div class="btn-group">
+        <button type="button" class="btn-submit btn-back" id="backBtn" style="display: none;">Orqaga</button>
+        <button type="button" class="btn-submit" id="nextBtn">Keyingisi ➔</button>
+        <button class="btn-submit" type="submit" id="submitBtn" style="display: none;">
+          Yuborish 🚀
+        </button>
+      </div>
 
     </form>
   </div>
@@ -446,6 +470,11 @@
   const sourceSel     = document.getElementById('source');
   const form          = document.getElementById('form');
   const submitBtn     = document.getElementById('submitBtn');
+  
+  const nextBtn       = document.getElementById('nextBtn');
+  const backBtn       = document.getElementById('backBtn');
+  const steps         = document.querySelectorAll('.step');
+  let currentStep     = 0;
 
   const fields = [
     { el: nameInput,   wrap: 'f-name',     err: 'e-name' },
@@ -486,7 +515,6 @@
     this.value = formatted;
 
     validateField(1, false);
-    updateProgress();
   });
 
   /* Name: faqat harflar */
@@ -496,12 +524,11 @@
   nameInput.addEventListener('input', function () {
     this.value = this.value.replace(/[0-9]/g, '');
     validateField(0, false);
-    updateProgress();
   });
 
-  gradeSelect.addEventListener('change',  () => { validateField(2, false); updateProgress(); });
-  districtSel.addEventListener('change',  () => { validateField(3, false); updateProgress(); });
-  sourceSel.addEventListener('change',    () => { validateField(4, false); updateProgress(); });
+  gradeSelect.addEventListener('change',  () => { validateField(2, false); });
+  districtSel.addEventListener('change',  () => { validateField(3, false); });
+  sourceSel.addEventListener('change',    () => { validateField(4, false); });
 
   /* Validators */
   function isValidName(v) {
@@ -529,18 +556,28 @@
     return ok;
   }
 
-  /* Progress */
+  /* Progress Update */
   function updateProgress() {
-    const checks = [
-      isValidName(nameInput.value.trim()),
-      isValidPhone(phoneInput.value.trim()),
-      gradeSelect.value !== '',
-      districtSel.value !== '',
-      sourceSel.value !== '',
-    ];
-    checks.forEach((ok, i) => {
-      document.getElementById('d' + (i + 1)).classList.toggle('filled', ok);
+    document.querySelectorAll('.dot').forEach((dot, i) => {
+      dot.classList.toggle('filled', i <= currentStep);
     });
+  }
+
+  function showStep(stepIndex) {
+    steps.forEach((step, i) => {
+      step.classList.toggle('active', i === stepIndex);
+    });
+
+    backBtn.style.display = stepIndex > 0 ? 'block' : 'none';
+    if (stepIndex === steps.length - 1) {
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'block';
+    } else {
+      nextBtn.style.display = 'block';
+      submitBtn.style.display = 'none';
+    }
+    
+    updateProgress();
   }
 
   function shakeElement(el) {
@@ -550,21 +587,43 @@
     el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
   }
 
+  /* Step Navigation */
+  nextBtn.addEventListener('click', () => {
+    if (validateField(currentStep, true)) {
+      currentStep++;
+      showStep(currentStep);
+    } else {
+      const errField = steps[currentStep].querySelector('.field');
+      shakeElement(errField);
+    }
+  });
+
+  backBtn.addEventListener('click', () => {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  });
+
+  /* Allow enter key to go to next step */
+  form.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (currentStep < steps.length - 1) {
+        nextBtn.click();
+      } else {
+        submitBtn.click();
+      }
+    }
+  });
+
   /* Submit */
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    let allOk = true;
-    fields.forEach((_, i) => {
-      if (!validateField(i, true)) allOk = false;
-    });
-
-    if (!allOk) {
-      const firstErr = document.querySelector('.field.error');
-      if (firstErr) {
-        firstErr.scrollIntoView({ block: 'center' });
-        shakeElement(firstErr);
-      }
+    if (!validateField(currentStep, true)) {
+      const errField = steps[currentStep].querySelector('.field');
+      shakeElement(errField);
       return;
     }
 
@@ -600,9 +659,18 @@
         }
       })
       .catch(function(err) {
-        alert('Xatolik yuz berdi: ' + err);
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Yuborish 🚀';
+        try {
+          // Fallback
+          tg.sendData(JSON.stringify(data));
+          document.getElementById('formCard').style.display = 'none';
+          document.getElementById('progress').style.display = 'none';
+          document.getElementById('success').style.display = 'block';
+          setTimeout(function() { tg.close(); }, 1800);
+        } catch(e) {
+          alert('Xatolik yuz berdi: ' + err);
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'Yuborish 🚀';
+        }
       });
   });
 </script>
