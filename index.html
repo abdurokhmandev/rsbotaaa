@@ -659,18 +659,9 @@
         }
       })
       .catch(function(err) {
-        try {
-          // Fallback
-          tg.sendData(JSON.stringify(data));
-          document.getElementById('formCard').style.display = 'none';
-          document.getElementById('progress').style.display = 'none';
-          document.getElementById('success').style.display = 'block';
-          setTimeout(function() { tg.close(); }, 1800);
-        } catch(e) {
-          alert('Xatolik yuz berdi: ' + err);
-          submitBtn.disabled = false;
-          submitBtn.innerText = 'Yuborish 🚀';
-        }
+        alert('Server bilan ulanishda xatolik yuz berdi: ' + err.message);
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Yuborish 🚀';
       });
   });
 </script>
