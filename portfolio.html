@@ -5,661 +5,797 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Abdurahmon — Telegram Bot Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════
-   DESIGN TOKENS
-═══════════════════════════════════════ */
+/* ═══════════════════════════════════
+   TOKENS
+═══════════════════════════════════ */
 :root {
-  --ink: #0A0A0F;
-  --ink2: #111118;
-  --ink3: #181820;
-  --ink4: #1E1E28;
-  --lime: #C6FF4A;
-  --lime2: #D4FF6B;
-  --lime-dim: rgba(198,255,74,0.1);
-  --lime-border: rgba(198,255,74,0.2);
-  --white: #FFFFFF;
-  --off: #F5F5F0;
-  --muted: rgba(255,255,255,0.38);
-  --muted2: rgba(255,255,255,0.55);
-  --border: rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.1);
-  --r: 16px;
-  --r2: 24px;
-  --r3: 12px;
+  --navy:      #0A1628;
+  --navy2:     #0F1F3D;
+  --navy3:     #162440;
+  --navy4:     #1C2E50;
+  --navy5:     #233660;
+  --blue:      #1E4FD8;
+  --blue2:     #2558E8;
+  --blue-soft: rgba(30,79,216,.12);
+  --blue-glow: rgba(30,79,216,.25);
+  --white:     #FFFFFF;
+  --off:       #F7F8FC;
+  --slate:     #94A3B8;
+  --slate2:    #CBD5E1;
+  --border:    rgba(255,255,255,.06);
+  --border2:   rgba(255,255,255,.12);
+  --border3:   rgba(255,255,255,.2);
+  --r:         14px;
+  --r2:        22px;
 }
 
-/* ═══════════════════════════════════════
-   RESET & BASE
-═══════════════════════════════════════ */
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; font-size:16px; }
-body {
-  background: var(--ink) ;
-  color: var(--white);
-  font-family: 'Cabinet Grotesk', sans-serif;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  cursor: none;
+/* ═══════════════════════════════════
+   RESET
+═══════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{
+  background:var(--navy);
+  color:var(--white);
+  font-family:'DM Sans',sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  cursor:none;
 }
-a { text-decoration: none; color: inherit; }
-button { cursor: none; }
-img { display: block; max-width: 100%; }
+a{text-decoration:none;color:inherit;}
+button{cursor:none;font-family:inherit;}
+img{display:block;max-width:100%;}
 
-/* ═══════════════════════════════════════
-   CUSTOM CURSOR
-═══════════════════════════════════════ */
-.cursor {
-  position: fixed; top:0; left:0; pointer-events:none; z-index:9999;
-  width: 12px; height: 12px; border-radius: 50%; background: var(--lime);
-  transform: translate(-50%,-50%);
-  transition: width .3s, height .3s, background .3s;
-  mix-blend-mode: difference;
+/* ═══════════════════════════════════
+   CURSOR
+═══════════════════════════════════ */
+#cur{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--blue2);
+  transform:translate(-50%,-50%);
+  transition:width .25s,height .25s;
+  mix-blend-mode:difference;
 }
-.cursor.big { width: 48px; height: 48px; }
-.cursor-ring {
-  position: fixed; top:0; left:0; pointer-events:none; z-index:9998;
-  width: 40px; height: 40px; border-radius: 50%;
-  border: 1px solid rgba(198,255,74,0.4);
-  transform: translate(-50%,-50%);
-  transition: transform .12s ease-out, width .3s, height .3s;
+#cur.big{width:44px;height:44px;}
+#curR{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9998;
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid rgba(30,79,216,.5);
+  transform:translate(-50%,-50%);
 }
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════════════
+   LOGO SVG (inline)
+═══════════════════════════════════ */
+.logo-mark{
+  display:inline-block;
+  width:32px;height:32px;
+  flex-shrink:0;
+}
+
+/* ═══════════════════════════════════
    NAV
-═══════════════════════════════════════ */
-nav {
-  position: fixed; top:0; left:0; right:0; z-index:500;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 48px; height: 68px;
-  background: rgba(10,10,15,0.75);
-  backdrop-filter: blur(24px) saturate(1.5);
-  border-bottom: 1px solid var(--border);
+═══════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 52px;height:70px;
+  background:rgba(10,22,40,.82);
+  backdrop-filter:blur(28px) saturate(1.8);
+  border-bottom:1px solid var(--border);
 }
-.nav-logo {
-  font-family: 'Clash Display', sans-serif;
-  font-size: 18px; font-weight: 700; letter-spacing: -.5px;
-  display: flex; align-items: center; gap: 10px;
+.nav-logo{
+  font-family:'Syne',sans-serif;
+  font-size:18px;font-weight:800;letter-spacing:-.3px;
+  display:flex;align-items:center;gap:10px;
 }
-.nav-logo-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--lime);
-  box-shadow: 0 0 12px var(--lime); animation: breathe 2s ease-in-out infinite;
+.nav-links{display:flex;align-items:center;gap:36px;}
+.nav-link{
+  font-size:14px;font-weight:500;color:var(--slate);
+  transition:color .2s;position:relative;
 }
-@keyframes breathe { 0%,100%{opacity:1} 50%{opacity:.3} }
+.nav-link::after{
+  content:'';position:absolute;bottom:-4px;left:0;right:0;
+  height:1.5px;background:var(--blue2);
+  transform:scaleX(0);transform-origin:left;transition:.3s;
+  border-radius:2px;
+}
+.nav-link:hover{color:var(--white);}
+.nav-link:hover::after{transform:scaleX(1);}
+.nav-r{display:flex;align-items:center;gap:8px;}
+.lng{
+  background:none;border:1px solid var(--border2);
+  color:var(--slate);font-size:11px;font-weight:700;
+  padding:5px 12px;border-radius:20px;
+  cursor:none;transition:.2s;letter-spacing:.8px;text-transform:uppercase;
+}
+.lng.on,.lng:hover{border-color:var(--blue2);color:var(--white);background:var(--blue-soft);}
+.nav-cta{
+  margin-left:8px;
+  background:var(--blue2);color:var(--white);
+  font-size:13px;font-weight:600;
+  padding:10px 22px;border-radius:8px;border:none;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:transform .2s,box-shadow .2s;
+  font-family:'DM Sans',sans-serif;
+}
+.nav-cta:hover{transform:scale(.96);box-shadow:0 8px 32px var(--blue-glow);}
 
-.nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-link {
-  font-size: 14px; font-weight: 500; color: var(--muted); transition: color .2s;
-  position: relative;
-}
-.nav-link::after {
-  content:''; position:absolute; bottom:-4px; left:0; right:0; height:1px;
-  background:var(--lime); transform:scaleX(0); transform-origin:left; transition:.3s;
-}
-.nav-link:hover { color: var(--white); }
-.nav-link:hover::after { transform:scaleX(1); }
-.nav-r { display: flex; align-items: center; gap: 8px; }
-.lng {
-  background:none; border:1px solid var(--border); color:var(--muted);
-  font-family:'Cabinet Grotesk',sans-serif; font-size:12px; font-weight:700;
-  padding:5px 12px; border-radius:20px; cursor:none; transition:.2s; letter-spacing:.5px;
-}
-.lng.on, .lng:hover { border-color:var(--lime-border); color:var(--lime); background:var(--lime-dim); }
-.nav-cta {
-  margin-left:8px; background:var(--lime); color:var(--ink);
-  font-family:'Cabinet Grotesk',sans-serif; font-size:14px; font-weight:800;
-  padding:10px 22px; border-radius:8px; border:none;
-  display:inline-flex; align-items:center; gap:6px;
-  transition: transform .2s, box-shadow .2s;
-}
-.nav-cta:hover { transform:scale(.96); box-shadow:0 0 32px rgba(198,255,74,.3); }
-
-/* ═══════════════════════════════════════
+/* ═══════════════════════════════════
    HERO
-═══════════════════════════════════════ */
-.hero {
-  min-height: 100vh;
-  padding: 100px 48px 60px;
-  position: relative; overflow: hidden;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+═══════════════════════════════════ */
+.hero{
+  min-height:100vh;padding:100px 52px 80px;
+  position:relative;overflow:hidden;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
 }
 
-/* background mesh */
-.hero-mesh {
-  position: absolute; inset:0; pointer-events:none; z-index:0;
+/* Background */
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+}
+.hero-bg-mesh{
+  position:absolute;inset:0;
   background:
-    radial-gradient(ellipse 60% 60% at 70% 40%, rgba(198,255,74,.07) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 15% 70%, rgba(198,255,74,.04) 0%, transparent 60%);
+    radial-gradient(ellipse 55% 65% at 75% 35%, rgba(30,79,216,.15) 0%,transparent 65%),
+    radial-gradient(ellipse 35% 45% at 10% 75%, rgba(30,79,216,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 30% 30% at 50% 90%, rgba(30,79,216,.05) 0%,transparent 60%);
 }
-.hero-grid-bg {
-  position:absolute; inset:0; pointer-events:none;
+.hero-grid{
+  position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-  background-size: 80px 80px;
-  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 40%, transparent 100%);
+    linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 35%,transparent 100%);
+}
+/* Decorative diagonal lines */
+.hero-deco{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;
+}
+.hero-deco::before{
+  content:'';position:absolute;
+  top:-200px;right:15%;
+  width:2px;height:600px;
+  background:linear-gradient(to bottom,transparent,rgba(30,79,216,.25),transparent);
+  transform:rotate(25deg);
+}
+.hero-deco::after{
+  content:'';position:absolute;
+  bottom:-100px;left:40%;
+  width:1px;height:400px;
+  background:linear-gradient(to bottom,transparent,rgba(30,79,216,.15),transparent);
+  transform:rotate(-15deg);
 }
 
-.hero-left { position:relative; z-index:1; }
-.hero-eyebrow {
-  display: inline-flex; align-items: center; gap: 10px;
-  background: var(--lime-dim); border:1px solid var(--lime-border);
-  border-radius: 100px; padding: 7px 16px;
-  font-size: 12px; font-weight: 700; color: var(--lime);
-  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 32px;
-}
-.hero-dot { width:7px; height:7px; border-radius:50%; background:var(--lime); box-shadow:0 0 10px var(--lime); animation:breathe 2s infinite; }
+.hero-left{position:relative;z-index:1;}
 
-.hero h1 {
-  font-family: 'Clash Display', sans-serif;
-  font-size: clamp(28px, 3vw, 44px);
-  font-weight: 700; line-height: 1.15; letter-spacing: -1.5px;
-  margin-bottom: 28px;
+.hero-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(30,79,216,.1);border:1px solid rgba(30,79,216,.3);
+  border-radius:100px;padding:8px 18px;margin-bottom:36px;
 }
-.hero h1 .line2 {
-  display: block;
-  background: linear-gradient(90deg, var(--lime), #A8FF3E);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip:text;
+.badge-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--blue2);
+  box-shadow:0 0 10px var(--blue2);
+  animation:pulse 2s ease-in-out infinite;
 }
-.hero h1 .line3 {
-  display:block; 
-  -webkit-text-stroke: 1px rgba(255,255,255,0.2);
-  -webkit-text-fill-color: transparent;
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.badge-text{
+  font-size:11px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(30,79,216,1);
+  font-family:'Syne',sans-serif;
+  background:linear-gradient(90deg,#6B9FFF,#1E4FD8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 
-.hero-desc {
-  font-size: 17px; line-height: 1.8; color: var(--muted2);
-  max-width: 460px; margin-bottom: 44px; font-weight: 400;
+.hero h1{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(36px,3.8vw,58px);
+  font-weight:800;line-height:1.08;letter-spacing:-2px;
+  margin-bottom:30px;
 }
-.hero-actions { display:flex; gap:14px; flex-wrap:wrap; margin-bottom: 56px; }
-.btn-lime {
-  background: var(--lime); color: var(--ink);
-  font-family:'Cabinet Grotesk',sans-serif; font-weight:800; font-size:15px;
-  padding:16px 28px; border-radius:10px; border:none;
-  display:flex; align-items:center; gap:10px;
-  transition: transform .2s, box-shadow .2s;
+.h1-line1{display:block;color:rgba(255,255,255,.55);}
+.h1-line2{
+  display:block;
+  background:linear-gradient(135deg,#FFFFFF 0%,#C8D8FF 60%,#6B9FFF 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.btn-lime:hover { transform:translateY(-2px); box-shadow:0 16px 48px rgba(198,255,74,.25); }
-.btn-ghost {
-  background:transparent; color:var(--white);
-  border:1px solid var(--border2);
-  font-family:'Cabinet Grotesk',sans-serif; font-weight:600; font-size:15px;
-  padding:16px 28px; border-radius:10px;
-  display:flex; align-items:center; gap:10px; transition:.2s;
-}
-.btn-ghost:hover { border-color:var(--lime-border); color:var(--lime); background:var(--lime-dim); }
-
-.hero-metrics {
-  display: flex; gap: 0;
-  border: 1px solid var(--border2); border-radius: var(--r);
-  overflow: hidden; width: fit-content;
-}
-.metric {
-  padding: 20px 28px;
-  border-right: 1px solid var(--border);
-  position: relative;
-}
-.metric:last-child { border-right: none; }
-.metric-num {
-  font-family: 'Clash Display', sans-serif;
-  font-size: 32px; font-weight: 700; color: var(--lime);
-  letter-spacing: -1.5px; line-height: 1; display: block;
-}
-.metric-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 500; display:block; }
-
-/* HERO RIGHT — code terminal card */
-.hero-right { position:relative; z-index:1; max-width:500px; margin-left:auto;}
-.terminal {
-  background: var(--ink2); border:1px solid var(--border2);
-  border-radius: 14px; overflow:hidden;
-  box-shadow: 0 20px 50px rgba(0,0,0,.5);
-}
-.terminal-bar {
-  display:flex; align-items:center; gap:6px;
-  padding:10px 16px; background:var(--ink3); border-bottom:1px solid var(--border);
-}
-.tbar-dot { width:10px; height:10px; border-radius:50%; }
-.tbar-title { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-left:auto; }
-.terminal-body { padding:16px 18px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.75; }
-.t-comment { color: #6A737D; }
-.t-key { color: #F97316; }
-.t-str { color: var(--lime); }
-.t-num { color: #A78BFA; }
-.t-bool { color: #60A5FA; }
-.t-fn { color: #34D399; }
-
-.bot-types-scroll {
-  display:flex; gap:10px; margin-top:16px; overflow:hidden;
-  mask-image: linear-gradient(90deg,transparent,black 15%,black 85%,transparent);
-}
-.btype {
-  flex-shrink:0; background:var(--ink3); border:1px solid var(--border);
-  border-radius:8px; padding:10px 16px;
-  font-size:12px; font-weight:700; color:var(--muted2);
-  white-space:nowrap; letter-spacing:.3px;
-  animation: scroll-x 20s linear infinite;
-}
-@keyframes scroll-x {
-  from { transform:translateX(0); }
-  to { transform:translateX(-50%); }
+.h1-line3{
+  display:block;
+  color:transparent;
+  -webkit-text-stroke:1.5px rgba(255,255,255,.18);
+  font-weight:800;
 }
 
-/* ═══════════════════════════════════════
-   MARQUEE
-═══════════════════════════════════════ */
-.marquee-strip {
-  background: var(--lime); padding:14px 0;
-  display:flex; overflow:hidden; border-top:1px solid rgba(0,0,0,.1);
-}
-.marquee-inner {
-  display:flex; gap:0; white-space:nowrap;
-  animation: marquee 20s linear infinite;
-}
-.marquee-inner2 { animation-delay:-10s; }
-@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-.marquee-item {
-  display:flex; align-items:center; gap:16px;
-  padding:0 28px; font-size:14px; font-weight:800;
-  color:var(--ink); letter-spacing:-.2px;
-  font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
-}
-.marquee-sep { color:rgba(0,0,0,.3); font-size:20px; }
-
-/* ═══════════════════════════════════════
-   SECTION BASE
-═══════════════════════════════════════ */
-.wrap { max-width:1140px; margin:0 auto; padding:0 48px; }
-.sec { padding:120px 0; }
-.chip {
-  display:inline-flex; align-items:center; gap:8px;
-  background:var(--ink3); border:1px solid var(--border2);
-  border-radius:100px; padding:6px 16px;
-  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
-  color:var(--lime); margin-bottom:24px;
-}
-.sec-h {
-  font-family:'Clash Display',sans-serif;
-  font-size: clamp(34px,4.5vw,54px);
-  font-weight:700; line-height:1.08; letter-spacing:-2px;
-  margin-bottom:16px;
-}
-.sec-h span { color:var(--lime); }
-.sec-sub {
-  font-size:17px; color:var(--muted2); line-height:1.8;
-  max-width:520px; margin-bottom:64px; font-weight:400;
+.hero-desc{
+  font-size:17px;line-height:1.85;
+  color:var(--slate2);max-width:480px;
+  margin-bottom:44px;font-weight:300;
 }
 
-/* ═══════════════════════════════════════
-   PORTFOLIO
-═══════════════════════════════════════ */
-.portfolio-bg { background:var(--ink2); }
-.proj-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); border-radius:24px; overflow:hidden; }
-.proj {
-  background:var(--ink2); padding:40px; position:relative; overflow:hidden;
-  transition: background .3s;
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:60px;}
+.btn-primary{
+  background:var(--blue2);color:var(--white);
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:15px;
+  padding:16px 30px;border-radius:10px;border:none;
+  display:flex;align-items:center;gap:10px;
+  transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
 }
-.proj:hover { background:var(--ink3); }
-.proj-accent {
-  position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg,var(--lime),transparent);
-  opacity:0; transition:.3s;
+.btn-primary::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
+  opacity:0;transition:.3s;
 }
-.proj:hover .proj-accent { opacity:1; }
-
-.proj-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; }
-.proj-icon {
-  width:56px; height:56px; border-radius:16px;
-  display:flex; align-items:center; justify-content:center; font-size:26px;
-}
-.proj-badge {
-  font-size:11px; font-weight:800; padding:4px 12px; border-radius:100px;
-  letter-spacing:.5px; text-transform:uppercase;
-}
-.b-live { background:rgba(16,185,129,.12); color:#10B981; border:1px solid rgba(16,185,129,.2); }
-.b-ai { background:rgba(139,92,246,.12); color:#A78BFA; border:1px solid rgba(139,92,246,.2); }
-.b-ecom { background:rgba(245,158,11,.12); color:#F59E0B; border:1px solid rgba(245,158,11,.2); }
-.b-edu { background:var(--lime-dim); color:var(--lime); border:1px solid var(--lime-border); }
-
-.proj h3 { font-family:'Clash Display',sans-serif; font-size:24px; font-weight:700; letter-spacing:-.8px; margin-bottom:12px; }
-.proj p { font-size:14px; color:var(--muted2); line-height:1.75; margin-bottom:24px; }
-.proj-numbers { display:flex; gap:28px; margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid var(--border); }
-.pnum { }
-.pnum-v { font-family:'Clash Display',sans-serif; font-size:26px; font-weight:700; color:var(--lime); letter-spacing:-1px; }
-.pnum-l { font-size:12px; color:var(--muted); margin-top:2px; }
-.proj-tags { display:flex; flex-wrap:wrap; gap:6px; }
-.ptag { font-size:11px; color:var(--muted2); background:rgba(255,255,255,.05); border-radius:5px; padding:4px 10px; font-weight:500; }
-
-/* full width proj */
-.proj.wide { grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; }
-.proj.wide .proj-right { }
-
-/* ═══════════════════════════════════════
-   SERVICES / PRICING
-═══════════════════════════════════════ */
-.plans-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-.plan {
-  background:var(--ink2); border:1px solid var(--border);
-  border-radius:var(--r2); padding:36px 32px;
-  display:flex; flex-direction:column; gap:0;
-  position:relative; overflow:hidden; transition:.3s;
-}
-.plan:hover { border-color:var(--border2); transform:translateY(-4px); }
-.plan.featured {
-  background:var(--lime); color:var(--ink);
-  border-color:var(--lime);
-}
-.plan.featured * { color:var(--ink) !important; }
-.plan-popular {
-  position:absolute; top:20px; right:20px;
-  background:var(--ink); color:var(--lime);
-  font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase;
-  padding:4px 12px; border-radius:100px;
-}
-.plan-name {
-  font-family:'Clash Display',sans-serif;
-  font-size:14px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
-  color:var(--muted); margin-bottom:12px;
-}
-.plan.featured .plan-name { color:rgba(10,10,15,.6); }
-.plan-price {
-  font-family:'Clash Display',sans-serif;
-  font-size:48px; font-weight:700; letter-spacing:-2px; line-height:1;
-  margin-bottom:6px;
-}
-.plan-price sub { font-size:18px; letter-spacing:0; font-weight:500; opacity:.6; }
-.plan-period { font-size:13px; color:var(--muted); margin-bottom:28px; font-weight:500; }
-.plan.featured .plan-period { color:rgba(10,10,15,.55); }
-.plan-divider { height:1px; background:var(--border); margin-bottom:28px; }
-.plan.featured .plan-divider { background:rgba(10,10,15,.15); }
-.plan-features { list-style:none; display:flex; flex-direction:column; gap:14px; flex:1; margin-bottom:32px; }
-.plan-features li { display:flex; align-items:flex-start; gap:10px; font-size:14px; font-weight:500; }
-.feat-check { color:var(--lime); font-size:16px; line-height:1; flex-shrink:0; margin-top:1px; }
-.plan.featured .feat-check { color:var(--ink); }
-.feat-x { color:var(--muted); font-size:16px; line-height:1; flex-shrink:0; margin-top:1px; }
-.feat-text-dim { color:var(--muted); }
-.plan.featured .feat-text-dim { color:rgba(10,10,15,.5); }
-.plan-btn {
-  display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:14px; border-radius:10px;
-  font-family:'Cabinet Grotesk',sans-serif; font-size:14px; font-weight:800;
-  cursor:none; transition:.2s; border:none; text-decoration:none;
-}
-.plan-btn-dark { background: #ffffff; color:var(--lime); }
-.plan-btn-dark:hover { background:var(--ink3); }
-.plan-btn-lime { background:var(--ink); color:var(--lime); }
-.plan-btn-outline { background:transparent; color:var(--white); border:1px solid var(--border2); }
-.plan-btn-outline:hover { border-color:var(--lime-border); color:var(--lime); background:var(--lime-dim); }
-
-.pricing-note {
-  margin-top:24px; text-align:center; font-size:14px; color:var(--muted);
-  display:flex; align-items:center; justify-content:center; gap:8px;
-}
-
-/* ═══════════════════════════════════════
-   SERVICES LIST
-═══════════════════════════════════════ */
-.services-list { display:flex; flex-direction:column; gap:1px; background:var(--border); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; }
-.srv-row {
-  background:var(--ink2); padding:28px 36px;
-  display:flex; align-items:center; gap:24px;
-  transition:background .2s;
-}
-.srv-row:hover { background:var(--ink3); }
-.srv-num { font-family:'Clash Display',sans-serif; font-size:14px; color:var(--lime); min-width:32px; font-weight:700; }
-.srv-icon2 { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
-.srv-info { flex:1; }
-.srv-info h3 { font-size:17px; font-weight:700; margin-bottom:4px; letter-spacing:-.3px; }
-.srv-info p { font-size:13px; color:var(--muted); line-height:1.6; }
-.srv-tags2 { display:flex; flex-wrap:wrap; gap:6px; }
-.stag2 { font-size:11px; color:rgba(198,255,74,.7); background:rgba(198,255,74,.07); border:1px solid rgba(198,255,74,.12); border-radius:5px; padding:3px 9px; font-weight:600; }
-.srv-arrow { font-size:20px; color:var(--muted); transition:.2s; }
-.srv-row:hover .srv-arrow { color:var(--lime); transform:translateX(4px); }
-
-/* ═══════════════════════════════════════
-   TECH STACK — bento grid
-═══════════════════════════════════════ */
-.bento { display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:auto auto; gap:12px; }
-.bento-cell {
-  background:var(--ink2); border:1px solid var(--border);
-  border-radius:var(--r); padding:24px;
-  display:flex; flex-direction:column; gap:12px;
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 20px 60px var(--blue-glow);}
+.btn-primary:hover::before{opacity:1;}
+.btn-outline{
+  background:transparent;color:var(--white);
+  border:1.5px solid var(--border3);
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:15px;
+  padding:16px 30px;border-radius:10px;
+  display:flex;align-items:center;gap:10px;
   transition:.25s;
 }
-.bento-cell:hover { border-color:var(--border2); background:var(--ink3); }
-.bento-cell.span2 { grid-column:span 2; }
-.bento-cell.span3 { grid-column:span 3; }
-.bento-cell.lime { background:var(--lime); border-color:var(--lime); }
-.bento-cell.lime * { color:var(--ink) !important; }
-.tech-logo { font-size:28px; }
-.tech-name { font-weight:700; font-size:16px; }
-.tech-desc { font-size:13px; color:var(--muted); line-height:1.6; }
-.bento-cell.lime .tech-desc { color:rgba(10,10,15,.6); }
-.bento-big-num {
-  font-family:'Clash Display',sans-serif; font-size:64px; font-weight:700;
-  letter-spacing:-3px; line-height:1; color:var(--lime);
-}
-.bento-big-lbl { font-size:15px; color:var(--muted2); font-weight:600; }
+.btn-outline:hover{border-color:var(--blue2);color:var(--blue2);background:var(--blue-soft);}
 
-/* ═══════════════════════════════════════
-   REVIEWS
-═══════════════════════════════════════ */
-.reviews-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-.review {
-  background:var(--ink2); border:1px solid var(--border);
-  border-radius:var(--r2); padding:32px; transition:.25s;
+.hero-stats{
+  display:flex;gap:0;
+  border:1px solid var(--border2);border-radius:var(--r);
+  overflow:hidden;width:fit-content;
+  background:rgba(15,31,61,.6);backdrop-filter:blur(10px);
 }
-.review:hover { border-color:var(--border2); transform:translateY(-2px); }
-.rev-stars { color:var(--lime); font-size:16px; letter-spacing:4px; margin-bottom:18px; }
-.rev-text {
-  font-size:15px; line-height:1.85; color:var(--muted2);
-  margin-bottom:24px; position:relative; padding-left:20px;
+.stat{
+  padding:22px 32px;border-right:1px solid var(--border);
 }
-.rev-text::before { content:'"'; position:absolute; left:0; top:-4px; font-size:32px; color:var(--lime); font-family:'Clash Display',sans-serif; line-height:1; }
-.rev-author { display:flex; align-items:center; gap:14px; }
-.rev-av {
-  width:44px; height:44px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:16px; font-weight:800; flex-shrink:0;
+.stat:last-child{border-right:none;}
+.stat-n{
+  font-family:'Syne',sans-serif;
+  font-size:30px;font-weight:800;
+  letter-spacing:-1px;line-height:1;
+  background:linear-gradient(135deg,#FFFFFF,#6B9FFF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  display:block;
 }
-.rev-name { font-size:15px; font-weight:700; }
-.rev-role { font-size:12px; color:var(--muted); margin-top:3px; }
+.stat-l{font-size:12px;color:var(--slate);margin-top:5px;font-weight:400;display:block;letter-spacing:.3px;}
 
-/* ═══════════════════════════════════════
-   PROCESS
-═══════════════════════════════════════ */
-.process-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
-.proc {
-  background:var(--ink2); border:1px solid var(--border);
-  border-radius:var(--r); padding:32px 28px; position:relative; overflow:hidden;
+/* HERO RIGHT */
+.hero-right{position:relative;z-index:1;max-width:500px;margin-left:auto;}
+
+/* Big logo display */
+.hero-logo-display{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  padding:60px;
+}
+.hero-logo-display::before{
+  content:'';position:absolute;inset:0;
+  border-radius:24px;
+  background:
+    radial-gradient(ellipse 80% 80% at 50% 50%,rgba(30,79,216,.12) 0%,transparent 70%),
+    linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  border:1px solid var(--border2);
+}
+.logo-svg-big{
+  width:220px;height:220px;opacity:.9;
+  filter:drop-shadow(0 20px 60px rgba(30,79,216,.4)) drop-shadow(0 0 1px rgba(255,255,255,.1));
+}
+/* Orbiting ring */
+.orbit-ring{
+  position:absolute;
+  width:320px;height:320px;border-radius:50%;
+  border:1px dashed rgba(30,79,216,.2);
+  animation:spin 20s linear infinite;
+}
+.orbit-ring::after{
+  content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+  width:10px;height:10px;border-radius:50%;
+  background:var(--blue2);box-shadow:0 0 16px var(--blue2);
+}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.tech-chips{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;justify-content:center;
+}
+.tech-chip{
+  font-size:12px;font-weight:500;color:var(--slate2);
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:6px;padding:6px 14px;
+  font-family:'JetBrains Mono',monospace;
+  transition:.2s;
+}
+.tech-chip:hover{border-color:rgba(30,79,216,.4);color:var(--white);background:var(--blue-soft);}
+
+/* ═══════════════════════════════════
+   MARQUEE
+═══════════════════════════════════ */
+.marquee-strip{
+  background:var(--blue2);padding:13px 0;
+  display:flex;overflow:hidden;
+  border-top:1px solid rgba(0,0,0,.15);
+  position:relative;
+}
+.marquee-strip::before,.marquee-strip::after{
+  content:'';position:absolute;top:0;bottom:0;width:100px;z-index:1;
+}
+.marquee-strip::before{left:0;background:linear-gradient(90deg,var(--blue2),transparent);}
+.marquee-strip::after{right:0;background:linear-gradient(-90deg,var(--blue2),transparent);}
+.mq{display:flex;animation:mq 22s linear infinite;}
+.mq2{animation-delay:-11s;}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.mq-item{
+  display:flex;align-items:center;gap:16px;
+  padding:0 28px;font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.9);white-space:nowrap;
+  font-family:'Syne',sans-serif;letter-spacing:.3px;
+}
+.mq-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);}
+
+/* ═══════════════════════════════════
+   SECTION BASE
+═══════════════════════════════════ */
+.wrap{max-width:1160px;margin:0 auto;padding:0 52px;}
+.sec{padding:120px 0;}
+.sec-alt{background:var(--navy2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+
+.chip2{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(30,79,216,.08);border:1px solid rgba(30,79,216,.2);
+  border-radius:6px;padding:5px 14px;
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--blue2);
+  margin-bottom:20px;font-family:'Syne',sans-serif;
+}
+.sec-h{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(32px,4vw,52px);
+  font-weight:800;line-height:1.08;letter-spacing:-1.5px;
+  margin-bottom:14px;
+}
+.sec-h span{
+  background:linear-gradient(135deg,#6B9FFF,#1E4FD8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.sec-sub{
+  font-size:17px;color:var(--slate2);line-height:1.8;
+  max-width:520px;margin-bottom:60px;font-weight:300;
+}
+
+/* ═══════════════════════════════════
+   PORTFOLIO
+═══════════════════════════════════ */
+.proj-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:24px;overflow:hidden;
+}
+.proj{
+  background:var(--navy);padding:44px;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.proj:hover{background:var(--navy2);}
+.proj-top-bar{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--blue2),rgba(30,79,216,.1));
+  opacity:0;transition:.3s;
+}
+.proj:hover .proj-top-bar{opacity:1;}
+
+.proj-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;}
+.proj-icon{
+  width:52px;height:52px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+}
+.proj-badge{
+  font-size:10px;font-weight:700;padding:4px 11px;
+  border-radius:100px;letter-spacing:.8px;text-transform:uppercase;
+  font-family:'Syne',sans-serif;
+}
+.b-live{background:rgba(16,185,129,.1);color:#34D399;border:1px solid rgba(16,185,129,.2);}
+.b-ai{background:rgba(30,79,216,.12);color:#6B9FFF;border:1px solid rgba(30,79,216,.25);}
+.b-ecom{background:rgba(251,191,36,.1);color:#FCD34D;border:1px solid rgba(251,191,36,.2);}
+
+.proj h3{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:700;
+  letter-spacing:-.5px;margin-bottom:10px;
+}
+.proj p{font-size:14px;color:var(--slate2);line-height:1.75;margin-bottom:22px;font-weight:300;}
+
+.proj-nums{
+  display:flex;gap:24px;margin-bottom:22px;
+  padding-bottom:22px;border-bottom:1px solid var(--border);
+}
+.pn-v{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:700;
+  color:var(--white);letter-spacing:-.5px;
+}
+.pn-l{font-size:11px;color:var(--slate);margin-top:3px;letter-spacing:.3px;}
+
+.proj-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.ptag{
+  font-size:11px;color:var(--slate2);
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:5px;padding:3px 10px;font-weight:400;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.proj.wide{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+
+/* ═══════════════════════════════════
+   PRICING
+═══════════════════════════════════ */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;}
+.plan{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:36px 30px;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
   transition:.3s;
 }
-.proc:hover { border-color:var(--lime-border); }
-.proc-n {
-  font-family:'Clash Display',sans-serif; font-size:72px; font-weight:700;
-  color:rgba(198,255,74,.06); position:absolute; top:12px; right:16px; line-height:1;
-  pointer-events:none;
+.plan:hover{border-color:var(--border2);transform:translateY(-4px);}
+.plan.featured{
+  background:linear-gradient(145deg,var(--blue) 0%,#1240B8 100%);
+  border-color:rgba(107,159,255,.3);
 }
-.proc-line { width:36px; height:3px; background:var(--lime); border-radius:2px; margin-bottom:20px; }
-.proc h3 { font-size:17px; font-weight:700; margin-bottom:10px; letter-spacing:-.3px; }
-.proc p { font-size:14px; color:var(--muted); line-height:1.7; }
-.proc-connector {
-  position:absolute; right:-8px; top:50%; transform:translateY(-50%);
-  width:16px; height:16px; border-radius:50%; background:var(--lime);
-  z-index:2;
+.plan-pop{
+  position:absolute;top:18px;right:18px;
+  background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 10px;border-radius:100px;font-family:'Syne',sans-serif;
 }
-.proc:last-child .proc-connector { display:none; }
+.plan-tier{
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--slate);margin-bottom:16px;
+}
+.plan.featured .plan-tier{color:rgba(255,255,255,.6);}
+.plan-price{
+  font-family:'Syne',sans-serif;font-size:44px;font-weight:800;
+  letter-spacing:-2px;line-height:1;margin-bottom:6px;
+}
+.plan-price sub{font-size:18px;letter-spacing:0;font-weight:500;opacity:.65;}
+.plan-per{font-size:13px;color:var(--slate);margin-bottom:28px;font-weight:400;}
+.plan.featured .plan-per{color:rgba(255,255,255,.55);}
+.plan-divider{height:1px;background:var(--border);margin-bottom:26px;}
+.plan.featured .plan-divider{background:rgba(255,255,255,.15);}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:13px;flex:1;margin-bottom:28px;}
+.plan-feats li{display:flex;align-items:flex-start;gap:10px;font-size:14px;font-weight:300;}
+.fcheck{color:#34D399;font-size:14px;flex-shrink:0;margin-top:1px;}
+.fcheck-no{color:var(--slate);font-size:14px;flex-shrink:0;margin-top:1px;}
+.fdim{color:var(--slate);}
+.plan.featured .fdim{color:rgba(255,255,255,.45);}
+.plan-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px;border-radius:10px;cursor:none;transition:.2s;
+  border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+}
+.pb-outline{background:transparent;color:var(--white);border:1.5px solid var(--border3);}
+.pb-outline:hover{border-color:var(--blue2);color:var(--blue2);background:var(--blue-soft);}
+.pb-white{background:rgba(255,255,255,.95);color:var(--blue);}
+.pb-white:hover{background:var(--white);}
 
-/* ═══════════════════════════════════════
-   ORDER SECTION
-═══════════════════════════════════════ */
-.order-section { background:var(--ink2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-.order-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-.ocard {
-  background:var(--ink3); border:1px solid var(--border);
-  border-radius:var(--r2); padding:36px 32px;
-  display:flex; flex-direction:column; gap:20px;
-  transition:.3s; position:relative; overflow:hidden;
+/* ═══════════════════════════════════
+   SERVICES
+═══════════════════════════════════ */
+.srv-list{
+  display:flex;flex-direction:column;gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;
 }
-.ocard::before {
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(135deg,rgba(198,255,74,.03),transparent);
-  opacity:0; transition:.3s;
-  pointer-events: none;
+.srv{
+  background:var(--navy2);padding:26px 36px;
+  display:flex;align-items:center;gap:22px;
+  transition:.2s;
 }
-.ocard:hover::before { opacity:1; }
-.ocard:hover { border-color:var(--border2); transform:translateY(-3px); }
-.ocard-num {
-  font-family:'Clash Display',sans-serif;
-  font-size:13px; font-weight:700; color:var(--lime); letter-spacing:1px; text-transform:uppercase;
+.srv:hover{background:var(--navy3);}
+.srv-n{
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+  color:var(--blue2);min-width:28px;letter-spacing:.5px;
 }
-.ocard-icon2 { font-size:36px; }
-.ocard h3 { font-family:'Clash Display',sans-serif; font-size:26px; font-weight:700; letter-spacing:-.8px; }
-.ocard p { font-size:14px; color:var(--muted2); line-height:1.75; flex:1; }
-.ocard-detail { font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; }
-.ocard-detail::before { content:'→'; color:var(--lime); }
-.obtn2 {
-  display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:15px; border-radius:12px;
-  font-family:'Cabinet Grotesk',sans-serif; font-size:14px; font-weight:800;
-  cursor:none; transition:.2s; border:none; text-decoration:none;
+.srv-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.srv-info{flex:1;}
+.srv-info h3{font-size:16px;font-weight:600;margin-bottom:4px;letter-spacing:-.2px;}
+.srv-info p{font-size:13px;color:var(--slate);line-height:1.6;font-weight:300;}
+.srv-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.stag{
+  font-size:10px;font-weight:600;letter-spacing:.5px;
+  color:rgba(107,159,255,.8);background:rgba(30,79,216,.08);
+  border:1px solid rgba(30,79,216,.15);border-radius:4px;
+  padding:3px 8px;font-family:'Syne',sans-serif;text-transform:uppercase;
 }
-.obtn-lime2 { background:var(--lime); color:var(--ink); }
-.obtn-lime2:hover { box-shadow:0 12px 40px rgba(198,255,74,.25); transform:scale(.97); }
-.obtn-out2 { background:transparent; color:var(--muted2); border:1px solid var(--border2); }
-.obtn-out2:hover { border-color:var(--lime-border); color:var(--lime); background:var(--lime-dim); }
+.srv-arr{color:var(--slate);font-size:18px;transition:.2s;}
+.srv:hover .srv-arr{color:var(--blue2);transform:translateX(4px);}
+.srv.special{background:rgba(30,79,216,.05);border-top:1px solid rgba(30,79,216,.15);}
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════════════
+   BENTO — Tech stack
+═══════════════════════════════════ */
+.bento{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  grid-template-rows:auto auto;gap:12px;
+}
+.bc{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r);padding:24px;
+  display:flex;flex-direction:column;gap:10px;
+  transition:.25s;
+}
+.bc:hover{border-color:var(--border2);background:var(--navy3);}
+.bc.s2{grid-column:span 2;}
+.bc.primary{
+  background:linear-gradient(145deg,var(--blue) 0%,#0F32A0 100%);
+  border-color:rgba(107,159,255,.3);
+}
+.bc-logo{font-size:26px;}
+.bc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+.bc-desc{font-size:13px;color:var(--slate2);line-height:1.6;font-weight:300;}
+.bc.primary .bc-desc{color:rgba(255,255,255,.6);}
+.bc-bignum{
+  font-family:'Syne',sans-serif;font-size:56px;font-weight:800;
+  letter-spacing:-3px;line-height:1;color:var(--white);
+}
+.bc-biglbl{font-size:14px;color:rgba(255,255,255,.6);font-weight:400;}
+
+/* ═══════════════════════════════════
+   REVIEWS
+═══════════════════════════════════ */
+.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.rev{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:32px;
+  transition:.25s;position:relative;overflow:hidden;
+}
+.rev::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(30,79,216,.3),transparent);
+  opacity:0;transition:.3s;
+}
+.rev:hover{border-color:var(--border2);transform:translateY(-2px);}
+.rev:hover::before{opacity:1;}
+.rev-stars{
+  display:flex;gap:3px;margin-bottom:18px;
+}
+.rev-stars span{color:#FCD34D;font-size:14px;}
+.rev-txt{
+  font-size:14px;line-height:1.85;color:var(--slate2);
+  margin-bottom:22px;padding-left:18px;position:relative;
+  font-weight:300;
+}
+.rev-txt::before{
+  content:'"';position:absolute;left:0;top:-6px;
+  font-size:28px;color:var(--blue2);font-family:'Syne',sans-serif;line-height:1;
+}
+.rev-author{display:flex;align-items:center;gap:12px;}
+.rev-av{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;font-family:'Syne',sans-serif;
+  flex-shrink:0;
+}
+.rev-name{font-size:14px;font-weight:600;letter-spacing:-.2px;}
+.rev-role{font-size:12px;color:var(--slate);margin-top:3px;font-weight:300;}
+
+/* ═══════════════════════════════════
+   PROCESS
+═══════════════════════════════════ */
+.proc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.proc{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r);padding:30px 24px;
+  position:relative;overflow:hidden;transition:.3s;
+}
+.proc:hover{border-color:rgba(30,79,216,.3);}
+.proc-ghost{
+  font-family:'Syne',sans-serif;font-size:64px;font-weight:800;
+  color:rgba(30,79,216,.06);
+  position:absolute;top:10px;right:12px;line-height:1;
+  pointer-events:none;letter-spacing:-3px;
+}
+.proc-line{width:32px;height:2px;background:var(--blue2);border-radius:2px;margin-bottom:18px;}
+.proc h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-.2px;}
+.proc p{font-size:13px;color:var(--slate2);line-height:1.7;font-weight:300;}
+
+/* ═══════════════════════════════════
    FAQ
-═══════════════════════════════════════ */
-.faq-list { display:flex; flex-direction:column; gap:0; border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; }
-.faq-item { border-bottom:1px solid var(--border); }
-.faq-item:last-child { border-bottom:none; }
-.faq-q {
-  padding:24px 32px; display:flex; align-items:center; justify-content:space-between;
-  cursor:none; background:var(--ink2); transition:.2s; gap:20px;
+═══════════════════════════════════ */
+.faq-list{
+  display:flex;flex-direction:column;gap:0;
+  border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;
 }
-.faq-q:hover { background:var(--ink3); }
-.faq-q-text { font-size:16px; font-weight:600; }
-.faq-icon { color:var(--lime); font-size:20px; flex-shrink:0; transition:.3s; }
-.faq-item.open .faq-icon { transform:rotate(45deg); }
-.faq-a {
-  max-height:0; overflow:hidden; background:var(--ink2);
-  font-size:14px; color:var(--muted2); line-height:1.8;
-  transition:max-height .4s ease, padding .3s;
-  padding:0 32px;
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-item:last-child{border-bottom:none;}
+.faq-q{
+  padding:22px 30px;display:flex;align-items:center;justify-content:space-between;
+  cursor:none;background:var(--navy2);transition:.2s;gap:20px;
 }
-.faq-item.open .faq-a { max-height:200px; padding:0 32px 24px; }
+.faq-q:hover{background:var(--navy3);}
+.faq-q-txt{font-size:15px;font-weight:500;letter-spacing:-.2px;}
+.faq-ico{
+  color:var(--blue2);font-size:18px;flex-shrink:0;
+  transition:.3s;font-family:'Syne',sans-serif;font-weight:700;
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(30,79,216,.1);
+  border:1px solid rgba(30,79,216,.2);
+}
+.faq-item.open .faq-ico{transform:rotate(45deg);}
+.faq-a{
+  max-height:0;overflow:hidden;background:var(--navy2);
+  font-size:14px;color:var(--slate2);line-height:1.8;font-weight:300;
+  transition:max-height .4s ease,padding .3s;padding:0 30px;
+}
+.faq-item.open .faq-a{max-height:200px;padding:0 30px 22px;}
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════════════
    CTA BANNER
-═══════════════════════════════════════ */
-.cta-banner {
-  margin:80px 0; border-radius:24px; overflow:hidden;
-  background:var(--lime); position:relative;
-  padding:80px 64px; display:flex; align-items:center; justify-content:space-between;
+═══════════════════════════════════ */
+.cta-wrap{margin:60px 0;}
+.cta-banner{
+  border-radius:24px;overflow:hidden;
+  background:linear-gradient(135deg,var(--blue) 0%,#0D2F9E 50%,#0A1F6E 100%);
+  padding:80px 64px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;
 }
-.cta-banner::before {
-  content:''; position:absolute; right:-100px; top:-100px;
-  width:400px; height:400px; border-radius:50%;
-  background:rgba(255,255,255,.08);
+.cta-banner::before{
+  content:'';position:absolute;right:-120px;top:-120px;
+  width:450px;height:450px;border-radius:50%;
+  background:rgba(255,255,255,.04);
 }
-.cta-banner::after {
-  content:''; position:absolute; left:200px; bottom:-120px;
-  width:300px; height:300px; border-radius:50%;
-  background:rgba(0,0,0,.05);
+.cta-banner::after{
+  content:'';position:absolute;left:30%;bottom:-80px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(255,255,255,.03);
 }
-.cta-left h2 {
-  font-family:'Clash Display',sans-serif;
-  font-size:clamp(32px,4vw,52px); font-weight:700;
-  color:var(--ink); letter-spacing:-1.5px; line-height:1.1; margin-bottom:12px;
+/* Geometric accent */
+.cta-geo{
+  position:absolute;top:0;bottom:0;right:15%;
+  width:1px;background:rgba(255,255,255,.08);
 }
-.cta-left p { font-size:16px; color:rgba(10,10,15,.65); font-weight:500; }
-.cta-right { position:relative; z-index:1; flex-shrink:0; }
-.cta-btn {
-  background:var(--ink); color:var(--lime);
-  font-family:'Cabinet Grotesk',sans-serif; font-weight:800; font-size:16px;
-  padding:18px 36px; border-radius:12px; border:none;
-  display:flex; align-items:center; gap:10px; text-decoration:none;
-  transition:.25s; white-space:nowrap;
+.cta-left h2{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(28px,3.5vw,46px);font-weight:800;
+  color:var(--white);letter-spacing:-1.5px;line-height:1.12;margin-bottom:10px;
 }
-.cta-btn:hover { transform:scale(.96); }
+.cta-left p{font-size:15px;color:rgba(255,255,255,.6);font-weight:300;}
+.cta-r{position:relative;z-index:1;flex-shrink:0;}
+.cta-btn{
+  background:var(--white);color:var(--blue);
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;
+  padding:18px 36px;border-radius:12px;border:none;
+  display:flex;align-items:center;gap:10px;
+  transition:.25s;white-space:nowrap;
+}
+.cta-btn:hover{transform:scale(.97);box-shadow:0 16px 48px rgba(0,0,0,.3);}
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════════════
+   ORDER
+═══════════════════════════════════ */
+.order-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.ocard{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:36px 30px;
+  display:flex;flex-direction:column;gap:16px;
+  transition:.3s;position:relative;overflow:hidden;
+}
+.ocard:hover{border-color:rgba(30,79,216,.3);transform:translateY(-3px);}
+.ocard-num{
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  color:var(--blue2);letter-spacing:2px;text-transform:uppercase;
+}
+.ocard-ico{font-size:32px;}
+.ocard h3{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.5px;}
+.ocard p{font-size:14px;color:var(--slate2);line-height:1.75;font-weight:300;flex:1;}
+.ocard-det{font-size:13px;color:var(--slate);display:flex;align-items:center;gap:8px;}
+.ocard-det::before{content:'→';color:var(--blue2);}
+.obtn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px;border-radius:10px;cursor:none;transition:.2s;
+  border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+}
+.obtn-primary{background:var(--blue2);color:var(--white);}
+.obtn-primary:hover{box-shadow:0 12px 40px var(--blue-glow);transform:scale(.97);}
+.obtn-outline{background:transparent;color:var(--slate2);border:1.5px solid var(--border2);}
+.obtn-outline:hover{border-color:var(--blue2);color:var(--blue2);background:var(--blue-soft);}
+
+/* ═══════════════════════════════════
    FOOTER
-═══════════════════════════════════════ */
-footer {
-  border-top:1px solid var(--border); padding:60px 48px 40px;
-  max-width:1140px; margin:0 auto;
+═══════════════════════════════════ */
+.footer-wrap{
+  border-top:1px solid var(--border);
+  padding:60px 52px 40px;max-width:1160px;margin:0 auto;
 }
-.foot-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:48px; flex-wrap:wrap; gap:32px; }
-.foot-logo {
-  font-family:'Clash Display',sans-serif; font-size:22px; font-weight:700; letter-spacing:-.5px;
-  display:flex; align-items:center; gap:10px; margin-bottom:14px;
+.foot-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:48px;flex-wrap:wrap;gap:32px;}
+.foot-logo{
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+  display:flex;align-items:center;gap:10px;margin-bottom:12px;
 }
-.foot-tagline { font-size:14px; color:var(--muted); max-width:240px; line-height:1.7; }
-.foot-col h4 { font-size:12px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
-.foot-col a { display:block; font-size:14px; color:var(--muted2); margin-bottom:10px; transition:.2s; }
-.foot-col a:hover { color:var(--lime); }
-.foot-bottom {
-  display:flex; align-items:center; justify-content:space-between;
-  padding-top:24px; border-top:1px solid var(--border);
-  font-size:13px; color:var(--muted); flex-wrap:wrap; gap:12px;
+.foot-tag{font-size:13px;color:var(--slate);max-width:220px;line-height:1.7;font-weight:300;}
+.foot-col h4{
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--slate);margin-bottom:16px;
+  font-family:'Syne',sans-serif;
 }
-.foot-socials { display:flex; gap:16px; }
-.foot-social {
-  width:36px; height:36px; border-radius:8px;
-  background:var(--ink3); border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  font-size:16px; transition:.2s;
+.foot-col a{
+  display:block;font-size:14px;color:var(--slate2);
+  margin-bottom:10px;transition:.2s;font-weight:300;
 }
-.foot-social:hover { border-color:var(--lime-border); background:var(--lime-dim); }
+.foot-col a:hover{color:var(--blue2);}
+.foot-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:24px;border-top:1px solid var(--border);
+  font-size:13px;color:var(--slate);flex-wrap:wrap;gap:12px;font-weight:300;
+}
+.foot-soc{display:flex;gap:10px;}
+.foot-soc-btn{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--navy2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  transition:.2s;
+}
+.foot-soc-btn:hover{border-color:rgba(30,79,216,.4);background:var(--blue-soft);}
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════════════
+   PRICING NOTE
+═══════════════════════════════════ */
+.price-note{
+  margin-top:22px;text-align:center;font-size:14px;color:var(--slate);
+  display:flex;align-items:center;justify-content:center;gap:8px;font-weight:300;
+}
+
+/* ═══════════════════════════════════
    SCROLL REVEAL
-═══════════════════════════════════════ */
-.r { opacity:0; transform:translateY(36px); transition:opacity .7s ease,transform .7s ease; }
-.r.in { opacity:1; transform:translateY(0); }
-.r-delay-1 { transition-delay:.1s; }
-.r-delay-2 { transition-delay:.2s; }
-.r-delay-3 { transition-delay:.3s; }
-.r-delay-4 { transition-delay:.4s; }
+═══════════════════════════════════ */
+.r{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
+.r.in{opacity:1;transform:translateY(0);}
+.r-d1{transition-delay:.1s;}.r-d2{transition-delay:.2s;}
+.r-d3{transition-delay:.3s;}.r-d4{transition-delay:.4s;}
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════════════
    RESPONSIVE
-═══════════════════════════════════════ */
+═══════════════════════════════════ */
 @media(max-width:900px){
-  nav { padding:0 20px; }
-  .nav-links { display:none; }
-  .hero { grid-template-columns:1fr; padding:130px 20px 60px; }
-  .hero-right { display:none; }
-  .wrap { padding:0 20px; }
-  .sec { padding:80px 0; }
-  .proj-grid { grid-template-columns:1fr; }
-  .proj.wide { grid-column:auto; display:flex; flex-direction:column; }
-  .plans-grid { grid-template-columns:1fr; }
-  .process-grid { grid-template-columns:1fr 1fr; }
-  .reviews-grid { grid-template-columns:1fr; }
-  .order-grid { grid-template-columns:1fr; }
-  .bento { grid-template-columns:1fr 1fr; }
-  .bento-cell.span3 { grid-column:span 2; }
-  .cta-banner { flex-direction:column; gap:32px; padding:48px 32px; }
-  footer { padding:40px 20px; }
-  .foot-top { flex-direction:column; }
-  .hero-metrics { flex-wrap:wrap; }
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .hero{grid-template-columns:1fr;padding:120px 20px 60px;}
+  .hero-right{display:none;}
+  .wrap{padding:0 20px;}
+  .sec{padding:80px 0;}
+  .proj-grid{grid-template-columns:1fr;}
+  .proj.wide{grid-column:auto;display:flex;flex-direction:column;}
+  .plans{grid-template-columns:1fr;}
+  .proc-grid{grid-template-columns:1fr 1fr;}
+  .rev-grid{grid-template-columns:1fr;}
+  .order-grid{grid-template-columns:1fr;}
+  .bento{grid-template-columns:1fr 1fr;}
+  .bc.s2{grid-column:span 2;}
+  .cta-banner{flex-direction:column;gap:32px;padding:48px 28px;}
+  .footer-wrap{padding:40px 20px;}
+  .foot-top{flex-direction:column;}
+  .hero-stats{flex-wrap:wrap;}
 }
 </style>
 </head>
 <body>
 
 <!-- CURSOR -->
-<div class="cursor" id="cur"></div>
-<div class="cursor-ring" id="curR"></div>
+<div id="cur"></div>
+<div id="curR"></div>
 
 <!-- NAV -->
 <nav>
   <div class="nav-logo">
-    <div class="nav-logo-dot"></div>
+    <!-- Inline logo SVG — navy A mark, white version for dark bg -->
+    <svg class="logo-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 80 L40 20 L60 20 L50 42 L70 20 L88 20 L88 42 L70 42 L85 80 L65 80 L55 55 L38 80Z" fill="white" opacity="0.92"/>
+    </svg>
     Abdurahmon.dev
   </div>
   <div class="nav-links">
@@ -680,177 +816,161 @@ footer {
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-mesh"></div>
-  <div class="hero-grid-bg"></div>
+  <div class="hero-bg">
+    <div class="hero-bg-mesh"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-deco"></div>
+  </div>
 
   <div class="hero-left">
-    <div class="hero-eyebrow r">
-      <div class="hero-dot"></div>
-      <span data-uz="Buyurtmalar qabul qilinmoqda" data-ru="Принимаю заказы" data-en="Open for orders">Buyurtmalar qabul qilinmoqda</span>
+    <div class="hero-badge r">
+      <div class="badge-dot"></div>
+      <span class="badge-text" data-uz="Buyurtmalar qabul qilinmoqda" data-ru="Принимаю заказы" data-en="Open for orders">Buyurtmalar qabul qilinmoqda</span>
     </div>
 
-    <h1 class="r r-delay-1">
-      <span style="display:block" data-uz="Men" data-ru="Я" data-en="I">Men</span>
-      <span class="line2" data-uz="Python Developer" data-ru="Разработчик Python" data-en="Python Developer">Python Developer</span>
-      <span class="line3" data-uz="{ Telegram BOT }" data-ru="{ Телеграм БОТ }" data-en="{ Telegram BOT }">{ Telegram BOT }</span>
+    <h1 class="r r-d1">
+      <span class="h1-line1" data-uz="Men" data-ru="Я" data-en="I">Men</span>
+      <span class="h1-line2" data-uz="Python Developer" data-ru="Разработчик Python" data-en="Python Developer">Python Developer</span>
+      <span class="h1-line3" data-uz="{ Telegram BOT }" data-ru="{ Telegram BOT }" data-en="{ Telegram BOT }">{ Telegram BOT }</span>
     </h1>
 
-    <p class="hero-desc r r-delay-2" data-uz="Biznesingiz uchun aqlli va ishonchli botlar yasayman — do'kondan AI assistantgacha. Python · Aiogram · 24/7 Server." data-ru="Создаю умные и надёжные боты для вашего бизнеса — от магазина до AI-ассистента. Python · Aiogram · 24/7 Server." data-en="I build smart and reliable bots for your business — from shops to AI assistants. Python · Aiogram · 24/7 Server.">
+    <p class="hero-desc r r-d2" data-uz="Biznesingiz uchun aqlli va ishonchli botlar yasayman — do'kondan AI assistantgacha. Python · Aiogram · 24/7 Server." data-ru="Создаю умные и надёжные боты — от магазина до AI-ассистента. Python · Aiogram · 24/7 Server." data-en="I build smart and reliable bots — from shops to AI assistants. Python · Aiogram · 24/7 Server.">
       Biznesingiz uchun aqlli va ishonchli botlar yasayman — do'kondan AI assistantgacha. Python · Aiogram · 24/7 Server.
     </p>
 
-    <div class="hero-actions r r-delay-3">
-      <a href="#order" class="btn-lime">📩 <span data-uz="Buyurtma berish" data-ru="Оставить заявку" data-en="Place an Order">Buyurtma berish</span></a>
-      <a href="#portfolio" class="btn-ghost"><span data-uz="Ishlarimni ko'rish" data-ru="Смотреть работы" data-en="See my work">Ishlarimni ko'rish</span> ↓</a>
+    <div class="hero-actions r r-d3">
+      <a href="#order" class="btn-primary">📩 <span data-uz="Buyurtma berish" data-ru="Оставить заявку" data-en="Place an Order">Buyurtma berish</span></a>
+      <a href="#portfolio" class="btn-outline"><span data-uz="Ishlarimni ko'rish" data-ru="Смотреть работы" data-en="See my work">Ishlarimni ko'rish</span> ↓</a>
     </div>
 
-    <div class="hero-metrics r r-delay-4">
-      <div class="metric">
-        <span class="metric-num">5+</span>
-        <span class="metric-lbl" data-uz="Bot yasalgan" data-ru="Ботов" data-en="Bots built">Bot yasalgan</span>
+    <div class="hero-stats r r-d4">
+      <div class="stat">
+        <span class="stat-n">5+</span>
+        <span class="stat-l" data-uz="Bot yasalgan" data-ru="Ботов" data-en="Bots built">Bot yasalgan</span>
       </div>
-      <div class="metric">
-        <span class="metric-num">3 – 7</span>
-        <span class="metric-lbl" data-uz="Kun ichida" data-ru="Дней" data-en="Days delivery">Kun ichida</span>
+      <div class="stat">
+        <span class="stat-n">3–7</span>
+        <span class="stat-l" data-uz="Kun ichida" data-ru="Дней" data-en="Days delivery">Kun ichida</span>
       </div>
-      <div class="metric">
-        <span class="metric-num">100%</span>
-        <span class="metric-lbl" data-uz="Kafolat" data-ru="Гарантия" data-en="Guarantee">Kafolat</span>
+      <div class="stat">
+        <span class="stat-n">100%</span>
+        <span class="stat-l" data-uz="Kafolat" data-ru="Гарантия" data-en="Guarantee">Kafolat</span>
       </div>
     </div>
   </div>
 
   <div class="hero-right">
-    <div class="terminal r r-delay-2">
-      <div class="terminal-bar">
-        <div class="tbar-dot" style="background:#FF5F57"></div>
-        <div class="tbar-dot" style="background:#FEBC2E"></div>
-        <div class="tbar-dot" style="background:#28C840"></div>
-        <div class="tbar-title">bot_config.py</div>
-      </div>
-      <div class="terminal-body">
-        <div><span class="t-comment"># 🤖 Bot Konfiguratsiyasi</span></div>
-        <div>&nbsp;</div>
-        <div><span class="t-key">bot_name</span> = <span class="t-str">"MyBusinessBot"</span></div>
-        <div><span class="t-key">features</span> = [</div>
-        <div>&nbsp;&nbsp;<span class="t-str">"catalog"</span>, <span class="t-str">"orders"</span>,</div>
-        <div>&nbsp;&nbsp;<span class="t-str">"payments"</span>, <span class="t-str">"admin"</span></div>
-        <div>]</div>
-        <div>&nbsp;</div>
-        <div><span class="t-key">ai_powered</span> = <span class="t-bool">True</span></div>
-        <div><span class="t-key">hosting</span> = <span class="t-str">"Server 24/7"</span></div>
-        <div><span class="t-key">delivery_days</span> = <span class="t-num">7</span></div>
-        <div>&nbsp;</div>
-        <div><span class="t-fn">deploy</span>(<span class="t-str">"production"</span>) <span class="t-comment">✓</span></div>
-      </div>
+    <div class="hero-logo-display r r-d2">
+      <div class="orbit-ring"></div>
+      <!-- Big logo — same geometric A mark as uploaded image -->
+      <svg class="logo-svg-big" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- A shape -->
+        <path d="M60 400 L200 100 L300 100 L250 210 L360 100 L440 100 L440 210 L340 210 L420 400 L320 400 L275 275 L190 400Z" fill="#0A1628"/>
+        <path d="M62 396 L200 104 L298 104 L250 212 L358 104 L436 104 L436 212 L342 212 L418 396 L322 396 L275 273 L192 396Z" fill="none" stroke="rgba(107,159,255,0.15)" stroke-width="1"/>
+        <!-- White fill -->
+        <path d="M70 390 L200 110 L295 110 L250 215 L355 110 L430 110 L430 215 L338 215 L415 390 L318 390 L275 270 L195 390Z" fill="white" opacity="0.95"/>
+      </svg>
     </div>
-
-    <div class="bot-types-scroll" style="margin-top:12px">
-      <div class="btype">🛒 E-commerce Bot</div>
-      <div class="btype">🤖 AI Assistant</div>
-      <div class="btype">📋 Registration</div>
-      <div class="btype">📚 Education</div>
-      <div class="btype">📊 CRM Bot</div>
-      <div class="btype">🛒 E-commerce Bot</div>
-      <div class="btype">🤖 AI Assistant</div>
-      <div class="btype">📋 Registration</div>
-      <div class="btype">📚 Education</div>
-      <div class="btype">📊 CRM Bot</div>
+    <div class="tech-chips">
+      <span class="tech-chip">python</span>
+      <span class="tech-chip">aiogram</span>
+      <span class="tech-chip">FSM</span>
+      <span class="tech-chip">SQLite</span>
+      <span class="tech-chip">GPT-4o</span>
+      <span class="tech-chip">Gemini</span>
+      <span class="tech-chip">Groq</span>
+      <span class="tech-chip">Railway</span>
     </div>
   </div>
 </div>
 
 <!-- MARQUEE -->
 <div class="marquee-strip">
-  <div class="marquee-inner">
-    <div class="marquee-item">🤖 Telegram Bot <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">Python <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">AI Integration <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">Google Sheets <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">Server Hosting <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">3 – 7 Kun Ichida <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">100% Kafolat <span class="marquee-sep">·</span></div>
-<div class="marquee-item">
-    Toshkent 🇺🇿 <span class="marquee-sep">·</span>
-</div>
-    <div class="marquee-item">🤖 Telegram Bot <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">Python <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">AI Integration <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">Google Sheets <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">Server Hosting <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">3 – 7 Kun Ichida <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">100% Kafolat <span class="marquee-sep">·</span></div>
-    <div class="marquee-item">Toshkent &#127482;&#127487;<span class="marquee-sep">·</span></div>
+  <div class="mq">
+    <div class="mq-item">🤖 Telegram Bot<div class="mq-dot"></div></div>
+    <div class="mq-item">Python<div class="mq-dot"></div></div>
+    <div class="mq-item">AI Integration<div class="mq-dot"></div></div>
+    <div class="mq-item">Google Sheets<div class="mq-dot"></div></div>
+    <div class="mq-item">Server Hosting<div class="mq-dot"></div></div>
+    <div class="mq-item">3–7 Kun Ichida<div class="mq-dot"></div></div>
+    <div class="mq-item">100% Kafolat<div class="mq-dot"></div></div>
+    <div class="mq-item">Toshkent 🇺🇿<div class="mq-dot"></div></div>
+    <div class="mq-item">🤖 Telegram Bot<div class="mq-dot"></div></div>
+    <div class="mq-item">Python<div class="mq-dot"></div></div>
+    <div class="mq-item">AI Integration<div class="mq-dot"></div></div>
+    <div class="mq-item">Google Sheets<div class="mq-dot"></div></div>
+    <div class="mq-item">Server Hosting<div class="mq-dot"></div></div>
+    <div class="mq-item">3–7 Kun Ichida<div class="mq-dot"></div></div>
+    <div class="mq-item">100% Kafolat<div class="mq-dot"></div></div>
+    <div class="mq-item">Toshkent 🇺🇿<div class="mq-dot"></div></div>
   </div>
 </div>
 
 <!-- PORTFOLIO -->
-<div class="portfolio-bg" id="portfolio">
+<div id="portfolio">
 <section class="sec">
 <div class="wrap">
-  <div class="chip r">⭐ <span data-uz="PORTFOLIO" data-ru="ПОРТФОЛИО" data-en="PORTFOLIO">PORTFOLIO</span></div>
+  <div class="chip2 r">⭐ <span data-uz="PORTFOLIO" data-ru="ПОРТФОЛИО" data-en="PORTFOLIO">PORTFOLIO</span></div>
   <h2 class="sec-h r" data-uz="Mening <span>ishlarim</span>" data-ru="Мои <span>работы</span>" data-en="My <span>work</span>">Mening <span>ishlarim</span></h2>
-  <p class="sec-sub r" data-uz="Har bir bot haqiqiy biznes muammosini hal qiladi. Quyida eng yaxshi loyihalarim." data-ru="Каждый бот решает реальную бизнес-задачу. Вот мои лучшие проекты." data-en="Each bot solves a real business problem. Here are my best projects.">Har bir bot haqiqiy biznes muammosini hal qiladi. Quyida eng yaxshi loyihalarim.</p>
+  <p class="sec-sub r" data-uz="Har bir bot haqiqiy biznes muammosini hal qiladi." data-ru="Каждый бот решает реальную бизнес-задачу." data-en="Each bot solves a real business problem.">Har bir bot haqiqiy biznes muammosini hal qiladi.</p>
 
   <div class="proj-grid r">
     <div class="proj">
-      <div class="proj-accent"></div>
+      <div class="proj-top-bar"></div>
       <div class="proj-head">
-        <div class="proj-icon" style="background:rgba(198,255,74,.1)">📋</div>
+        <div class="proj-icon" style="background:rgba(52,211,153,.08)">📋</div>
         <span class="proj-badge b-live" data-uz="Ishlamoqda" data-ru="Работает" data-en="Live">Ishlamoqda</span>
       </div>
       <h3>Rahimov Suhbatlar</h3>
-      <p data-uz="Foydalanuvchilarni ro'yxatga olish tizimi. Telegram Web App forma, Google Sheets sinxronizatsiya, admin dashboard va to'liq FSM holat kuzatuvi." data-ru="Система регистрации на олимпиаду. Telegram Web App, Google Sheets, admin dashboard и FSM." data-en="Olympiad registration system. Telegram Web App, Google Sheets sync, admin dashboard and full FSM.">Olimpiadaga ro'yxatga olish tizimi. Web App forma, Google Sheets sinxronizatsiya va admin panel.</p>
-      <div class="proj-numbers">
-        <div class="pnum"><div class="pnum-v">350+</div><div class="pnum-l" data-uz="Foydalanuvchi" data-ru="Пользователей" data-en="Users">Foydalanuvchi</div></div>
-        <div class="pnum"><div class="pnum-v">24/7</div><div class="pnum-l" data-uz="Uptime" data-ru="Аптайм" data-en="Uptime">Uptime</div></div>
-        <div class="pnum"><div class="pnum-v">O'quvchi yeg'ish</div><div class="pnum-l" data-uz="Vazifasi" data-ru="Назначение" data-en="Hosting">Vazifasi</div></div>
+      <p data-uz="Olimpiadaga ro'yxatga olish tizimi. Web App forma, Google Sheets sinxronizatsiya va admin panel." data-ru="Система регистрации на олимпиаду. Web App, Sheets, admin." data-en="Olympiad registration. Web App, Sheets, admin.">Olimpiadaga ro'yxatga olish tizimi. Web App forma, Google Sheets sinxronizatsiya va admin panel.</p>
+      <div class="proj-nums">
+        <div><div class="pn-v">350+</div><div class="pn-l" data-uz="Foydalanuvchi" data-ru="Пользователей" data-en="Users">Foydalanuvchi</div></div>
+        <div><div class="pn-v">24/7</div><div class="pn-l">Uptime</div></div>
+        <div><div class="pn-v">Live</div><div class="pn-l" data-uz="Holati" data-ru="Статус" data-en="Status">Holati</div></div>
       </div>
-      <div class="proj-tags"><span class="ptag">aiogram 3</span><span class="ptag">FSM</span><span class="ptag">Google Sheets</span><span class="ptag">Web App</span><span class="ptag">Server</span></div>
+      <div class="proj-tags"><span class="ptag">aiogram 3</span><span class="ptag">FSM</span><span class="ptag">Sheets</span><span class="ptag">Web App</span><span class="ptag">Railway</span></div>
     </div>
 
     <div class="proj">
-      <div class="proj-accent"></div>
+      <div class="proj-top-bar"></div>
       <div class="proj-head">
-        <div class="proj-icon" style="background:rgba(139,92,246,.1)">🤖</div>
+        <div class="proj-icon" style="background:rgba(30,79,216,.1)">🤖</div>
         <span class="proj-badge b-ai">AI Powered</span>
       </div>
-      <h3 data-uz="Uyga vazifa boti" data-ru="Бот ДЗ" data-en="Homework Bot">Uyga vazifa boti</h3>
-      <p data-uz="O'qituvchi va o'quvchi rollari. Groq/Gemini AI orqali rasm asosida uyga vazifani avtomatik tekshirish. SQLite baza." data-ru="Роли учителя/ученика. Groq/Gemini AI проверяет ДЗ по фото. SQLite база." data-en="Teacher/student roles. Groq/Gemini AI checks homework from photos. SQLite database.">O'qituvchi/o'quvchi rollari. AI orqali rasmdan uyga vazifani tekshirish. SQLite baza.</p>
-      <div class="proj-numbers">
-        <div class="pnum"><div class="pnum-v">Groq</div><div class="pnum-l">AI Engine</div></div>
-        <div class="pnum"><div class="pnum-v">2</div><div class="pnum-l" data-uz="Rol tizimi" data-ru="Роли" data-en="Roles">Rol tizimi</div></div>
-        <div class="pnum"><div class="pnum-v">Auto</div><div class="pnum-l" data-uz="Tekshiruv" data-ru="Проверка" data-en="Checking">Tekshiruv</div></div>
+      <h3 data-uz="Uyga vazifa boti" data-ru="Бот проверки ДЗ" data-en="Homework Bot">Uyga vazifa boti</h3>
+      <p data-uz="O'qituvchi/o'quvchi rollari. Groq/Gemini AI orqali rasmdan uyga vazifani tekshirish. SQLite baza." data-ru="Роли учитель/ученик. AI проверка ДЗ по фото. SQLite." data-en="Teacher/student roles. AI checks homework from photos. SQLite.">O'qituvchi/o'quvchi rollari. AI orqali rasmdan uyga vazifani tekshirish.</p>
+      <div class="proj-nums">
+        <div><div class="pn-v">Groq</div><div class="pn-l">AI Engine</div></div>
+        <div><div class="pn-v">2</div><div class="pn-l" data-uz="Rol" data-ru="Роли" data-en="Roles">Rol</div></div>
+        <div><div class="pn-v">Auto</div><div class="pn-l" data-uz="Tekshiruv" data-ru="Проверка" data-en="Check">Tekshiruv</div></div>
       </div>
-      <div class="proj-tags"><span class="ptag">aiogram</span><span class="ptag">SQLite</span><span class="ptag">Groq AI</span><span class="ptag">Gemini</span><span class="ptag">Image AI</span></div>
+      <div class="proj-tags"><span class="ptag">aiogram</span><span class="ptag">SQLite</span><span class="ptag">Groq</span><span class="ptag">Gemini</span></div>
     </div>
 
     <div class="proj wide">
-      <div class="proj-accent"></div>
+      <div class="proj-top-bar"></div>
       <div>
         <div class="proj-head">
-          <div class="proj-icon" style="background:rgba(245,158,11,.1)">🛒</div>
+          <div class="proj-icon" style="background:rgba(252,211,77,.08)">🛒</div>
           <span class="proj-badge b-ecom">E-commerce</span>
         </div>
         <h3>Freshly Market Bot</h3>
-        <p data-uz="To'liq e-commerce yechim. Mahsulot katalogi, virtual savat, Payme/Click to'lov integratsiyasi, virtual tarozi UI va Django admin panel." data-ru="Полное e-commerce решение. Каталог товаров, виртуальная корзина, Payme/Click, виртуальные весы и Django admin." data-en="Full e-commerce solution. Product catalog, virtual cart, Payme/Click payment, virtual scale UI and Django admin.">To'liq e-commerce yechim. Katalog, savat, Payme/Click to'lov, virtual tarozi UI va Django admin panel.</p>
-        <div class="proj-numbers">
-          <div class="pnum"><div class="pnum-v">Payme</div><div class="pnum-l" data-uz="To'lov" data-ru="Оплата" data-en="Payment">To'lov</div></div>
-          <div class="pnum"><div class="pnum-v">Django</div><div class="pnum-l">Backend</div></div>
-          <div class="pnum"><div class="pnum-v">2x</div><div class="pnum-l" data-uz="Savdo o'sishi" data-ru="Рост продаж" data-en="Sales growth">Savdo o'sishi</div></div>
+        <p data-uz="To'liq e-commerce yechim. Katalog, savat, Payme/Click to'lov, virtual tarozi UI va Django admin panel." data-ru="Полное e-commerce. Каталог, корзина, Payme/Click, Django admin." data-en="Full e-commerce. Catalog, cart, Payme/Click payments, Django admin.">To'liq e-commerce yechim. Katalog, savat, Payme/Click to'lov, virtual tarozi UI va Django admin panel.</p>
+        <div class="proj-nums">
+          <div><div class="pn-v">Payme</div><div class="pn-l" data-uz="To'lov" data-ru="Оплата" data-en="Payment">To'lov</div></div>
+          <div><div class="pn-v">Django</div><div class="pn-l">Backend</div></div>
+          <div><div class="pn-v">2×</div><div class="pn-l" data-uz="Savdo o'sishi" data-ru="Рост" data-en="Growth">Savdo o'sishi</div></div>
         </div>
-        <div class="proj-tags"><span class="ptag">aiogram</span><span class="ptag">Django</span><span class="ptag">Payme</span><span class="ptag">Click</span><span class="ptag">Uzum</span><span class="ptag">SQLite</span><span class="ptag">Web App</span></div>
+        <div class="proj-tags"><span class="ptag">aiogram</span><span class="ptag">Django</span><span class="ptag">Payme</span><span class="ptag">Click</span><span class="ptag">Uzum</span><span class="ptag">Web App</span></div>
       </div>
-      <div class="proj-right">
-        <div style="background:var(--ink4);border:1px solid var(--border2);border-radius:14px;padding:28px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9">
-          <div style="color:#6A737D"># Kod yozishdagi jarayon 😍 ✓</div>
-          <div><span style="color:#C6FF4A">order_id</span> = <span style="color:#A78BFA">10482</span></div>
-          <div><span style="color:#C6FF4A">product</span> = <span style="color:#F97316">"Olma 1kg"</span></div>
-          <div><span style="color:#C6FF4A">qty</span> = <span style="color:#A78BFA">3</span></div>
-          <div><span style="color:#C6FF4A">total</span> = <span style="color:#A78BFA">45000</span> <span style="color:#6A737D">UZS</span></div>
-          <div><span style="color:#C6FF4A">payment</span> = <span style="color:#F97316">"Payme ✓"</span></div>
-          <div><span style="color:#C6FF4A">status</span> = <span style="color:#34D399">"confirmed"</span></div>
-        </div>
+      <div style="background:var(--navy3);border:1px solid var(--border2);border-radius:14px;padding:28px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2">
+        <div style="color:var(--slate)"># order confirmed ✓</div>
+        <div><span style="color:#6B9FFF">order_id</span> = <span style="color:#C084FC">10482</span></div>
+        <div><span style="color:#6B9FFF">product</span> = <span style="color:#86EFAC">"Olma 1kg"</span></div>
+        <div><span style="color:#6B9FFF">qty</span> = <span style="color:#C084FC">3</span></div>
+        <div><span style="color:#6B9FFF">total</span> = <span style="color:#C084FC">45_000</span> <span style="color:var(--slate)">UZS</span></div>
+        <div><span style="color:#6B9FFF">payment</span> = <span style="color:#86EFAC">"Payme ✓"</span></div>
+        <div><span style="color:#6B9FFF">status</span> = <span style="color:#34D399">"confirmed"</span></div>
       </div>
     </div>
   </div>
@@ -859,169 +979,143 @@ footer {
 </div>
 
 <!-- PRICING -->
-<section class="sec" id="pricing">
+<section class="sec sec-alt" id="pricing">
 <div class="wrap">
-  <div class="chip r">💰 <span data-uz="NARXLAR" data-ru="ЦЕНЫ" data-en="PRICING">NARXLAR</span></div>
+  <div class="chip2 r">💰 <span data-uz="NARXLAR" data-ru="ЦЕНЫ" data-en="PRICING">NARXLAR</span></div>
   <h2 class="sec-h r" data-uz="Aniq va <span>shaffof narxlar</span>" data-ru="Чёткие и <span>прозрачные цены</span>" data-en="Clear and <span>transparent pricing</span>">Aniq va <span>shaffof narxlar</span></h2>
-  <p class="sec-sub r" data-uz="Har qanday byudjet uchun mos variant. Yashirin to'lovlar yo'q." data-ru="Вариант для любого бюджета. Никаких скрытых платежей." data-en="A plan for every budget. No hidden fees.">Har qanday byudjet uchun mos variant. Yashirin to'lovlar yo'q.</p>
+  <p class="sec-sub r" data-uz="Har qanday byudjet uchun. Yashirin to'lovlar yo'q." data-ru="Для любого бюджета. Без скрытых платежей." data-en="For every budget. No hidden fees.">Har qanday byudjet uchun. Yashirin to'lovlar yo'q.</p>
 
-  <div class="plans-grid r">
-
-    <!-- STARTER -->
+  <div class="plans r">
     <div class="plan">
-      <div class="plan-name" data-uz="STARTER" data-ru="СТАРТЕР" data-en="STARTER">STARTER</div>
-      <div class="plan-price">
-        <sub>от </sub>49<sub> $</sub>
-      </div>
-      <div class="plan-period" data-uz="Oddiy bot uchun" data-ru="Для простого бота" data-en="For a simple bot">Oddiy bot uchun</div>
+      <div class="plan-tier" data-uz="STARTER" data-ru="СТАРТЕР" data-en="STARTER">STARTER</div>
+      <div class="plan-price"><sub>от </sub>49<sub> $</sub></div>
+      <div class="plan-per" data-uz="Oddiy bot uchun" data-ru="Для простого бота" data-en="For a simple bot">Oddiy bot uchun</div>
       <div class="plan-divider"></div>
-      <ul class="plan-features">
-        <li><span class="feat-check">✓</span> <span data-uz="Asosiy buyurtma / ma'lumot boti" data-ru="Простой бот заказов" data-en="Basic order / info bot">Asosiy buyurtma / ma'lumot boti</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Inline klaviatura + FSM" data-ru="Inline клавиатура + FSM" data-en="Inline keyboard + FSM">Inline klaviatura + FSM</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Admin panel (oddiy)" data-ru="Простая admin-панель" data-en="Simple admin panel">Admin panel (oddiy)</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Server deploy + 1 oy qo'llab-quvvatlash" data-ru="Server deploy + 1 мес поддержка" data-en="Server deploy + 1 month support">Server deploy + 1 oy support</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Google Sheets integratsiya" data-ru="Google Sheets" data-en="Google Sheets integration">Google Sheets integratsiya</span></li>
-        <li><span class="feat-x">✗</span> <span class="feat-text-dim" data-uz="AI integratsiya" data-ru="AI интеграция" data-en="AI integration">AI integratsiya</span></li>
-        <li><span class="feat-x">✗</span> <span class="feat-text-dim" data-uz="To'lov tizimi" data-ru="Платёжная система" data-en="Payment system">To'lov tizimi</span></li>
+      <ul class="plan-feats">
+        <li><span class="fcheck">✓</span> <span data-uz="Asosiy buyurtma boti" data-ru="Простой бот заказов" data-en="Basic order bot">Asosiy buyurtma boti</span></li>
+        <li><span class="fcheck">✓</span> <span>Inline klaviatura + FSM</span></li>
+        <li><span class="fcheck">✓</span> <span data-uz="Admin panel (oddiy)" data-ru="Простая admin-панель" data-en="Simple admin panel">Admin panel</span></li>
+        <li><span class="fcheck">✓</span> <span data-uz="Server deploy + 1 oy support" data-ru="Deploy + 1 мес поддержка" data-en="Deploy + 1 month support">Server deploy + 1 oy support</span></li>
+        <li><span class="fcheck">✓</span> Google Sheets integratsiya</li>
+        <li><span class="fcheck-no">✗</span> <span class="fdim">AI integratsiya</span></li>
+        <li><span class="fcheck-no">✗</span> <span class="fdim" data-uz="To'lov tizimi" data-ru="Оплата" data-en="Payment">To'lov tizimi</span></li>
       </ul>
-      <a href="https://t.me/abdurokhmandev" target="_blank" class="plan-btn plan-btn-outline">
+      <a href="https://t.me/abdurokhmandev" target="_blank" class="plan-btn pb-outline">
         <span data-uz="Buyurtma berish" data-ru="Заказать" data-en="Get started">Buyurtma berish</span> →
       </a>
     </div>
 
-    <!-- PRO (featured) -->
     <div class="plan featured">
-      <div class="plan-popular" data-uz="ENG MASHHUR" data-ru="ХИТ" data-en="POPULAR">ENG MASHHUR</div>
-      <div class="plan-name" data-uz="PRO" data-ru="ПРО" data-en="PRO">PRO</div>
-      <div class="plan-price">
-        <sub>от </sub>109<sub> $</sub>
-      </div>
-      <div class="plan-period" data-uz="Ko'pgina bizneslar uchun ideal" data-ru="Идеально для большинства" data-en="Ideal for most businesses">Ko'pgina bizneslar uchun ideal</div>
+      <div class="plan-pop" data-uz="ENG MASHHUR" data-ru="ХИТ" data-en="POPULAR">ENG MASHHUR</div>
+      <div class="plan-tier">PRO</div>
+      <div class="plan-price"><sub>от </sub>109<sub> $</sub></div>
+      <div class="plan-per" data-uz="Ko'pgina bizneslar uchun" data-ru="Для большинства" data-en="For most businesses">Ko'pgina bizneslar uchun ideal</div>
       <div class="plan-divider"></div>
-      <ul class="plan-features">
-        <li><span class="feat-check">✓</span> <span data-uz="Starter + barcha xususiyatlar" data-ru="Starter + всё включено" data-en="Starter + all features">Starter + barcha xususiyatlar</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Google Sheets / SQLite integratsiya" data-ru="Google Sheets / SQLite" data-en="Google Sheets / SQLite">Google Sheets / SQLite integratsiya</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="To'lov tizimi (Click, Payme)" data-ru="Оплата (Click, Payme)" data-en="Payment (Click, Payme)">To'lov tizimi (Click, Payme)</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Kengaytirilgan admin panel" data-ru="Расширенная admin-панель" data-en="Advanced admin panel">Kengaytirilgan admin panel</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Telegram Web App UI" data-ru="Telegram Web App" data-en="Telegram Web App UI">Telegram Web App UI</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="3 oy bepul qo'llab-quvvatlash" data-ru="3 мес бесплатной поддержки" data-en="3 months free support">3 oy bepul support</span></li>
-        <li><span class="feat-x">✓</span> <span class="feat-text-dim" data-uz="AI integratsiya" data-ru="AI" data-en="AI integration">AI integratsiya</span></li>
+      <ul class="plan-feats">
+        <li><span class="fcheck">✓</span> <span data-uz="Starter + barcha xususiyatlar" data-ru="Всё из Starter" data-en="All Starter features">Starter + barcha xususiyatlar</span></li>
+        <li><span class="fcheck">✓</span> Google Sheets / SQLite</li>
+        <li><span class="fcheck">✓</span> <span data-uz="To'lov (Click, Payme)" data-ru="Оплата Click, Payme" data-en="Payment Click, Payme">To'lov tizimi (Click, Payme)</span></li>
+        <li><span class="fcheck">✓</span> <span data-uz="Kengaytirilgan admin panel" data-ru="Расширенный admin" data-en="Advanced admin">Kengaytirilgan admin panel</span></li>
+        <li><span class="fcheck">✓</span> Telegram Web App UI</li>
+        <li><span class="fcheck">✓</span> <span data-uz="3 oy bepul support" data-ru="3 мес поддержки" data-en="3 months support">3 oy bepul support</span></li>
+        <li><span class="fcheck">✓</span> AI integratsiya</li>
       </ul>
-      <a href="https://t.me/abdurokhmandev" target="_blank" class="plan-btn plan-btn-dark">
+      <a href="https://t.me/abdurokhmandev" target="_blank" class="plan-btn pb-white">
         <span data-uz="Buyurtma berish" data-ru="Заказать" data-en="Get started">Buyurtma berish</span> ↗
       </a>
     </div>
 
-    <!-- ENTERPRISE -->
     <div class="plan">
-      <div class="plan-name" data-uz="ENTERPRISE" data-ru="ЭНТЕРПРАЙЗ" data-en="ENTERPRISE">ENTERPRISE</div>
-      <div class="plan-price">
-        <sub>от </sub>249<sub> $</sub>
-      </div>
-      <div class="plan-period" data-uz="Maxsus va murakkab loyihalar" data-ru="Для сложных проектов" data-en="For complex projects">Maxsus va murakkab loyihalar</div>
+      <div class="plan-tier" data-uz="ENTERPRISE" data-ru="ЭНТЕРПРАЙЗ" data-en="ENTERPRISE">ENTERPRISE</div>
+      <div class="plan-price"><sub>от </sub>249<sub> $</sub></div>
+      <div class="plan-per" data-uz="Murakkab loyihalar" data-ru="Для сложных проектов" data-en="For complex projects">Murakkab va maxsus loyihalar</div>
       <div class="plan-divider"></div>
-      <ul class="plan-features">
-        <li><span class="feat-check">✓</span> <span data-uz="Pro + barcha xususiyatlar" data-ru="Pro + всё включено" data-en="Pro + everything">Pro + barcha xususiyatlar</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="AI integratsiya (GPT-4o / Gemini)" data-ru="AI (GPT-4o / Gemini)" data-en="AI (GPT-4o / Gemini)">AI integratsiya (GPT-4o / Gemini)</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Ko'p til qo'llab-quvvatlash" data-ru="Мультиязычность" data-en="Multi-language support">Ko'p til qo'llab-quvvatlash</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Custom Web App dizayn" data-ru="Кастомный Web App" data-en="Custom Web App design">Custom Web App dizayn</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="PostgreSQL + to'liq backend" data-ru="PostgreSQL + backend" data-en="PostgreSQL + full backend">PostgreSQL + to'liq backend</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="6 oy bepul texnik yordam" data-ru="6 мес тех-поддержки" data-en="6 months tech support">6 oy bepul texnik yordam</span></li>
-        <li><span class="feat-check">✓</span> <span data-uz="Manba kodi + dokumentatsiya" data-ru="Исходный код + документация" data-en="Source code + docs">Manba kodi + dokumentatsiya</span></li>
+      <ul class="plan-feats">
+        <li><span class="fcheck">✓</span> <span data-uz="Pro + barcha xususiyatlar" data-ru="Pro + всё" data-en="Pro + everything">Pro + barcha xususiyatlar</span></li>
+        <li><span class="fcheck">✓</span> AI (GPT-4o / Gemini)</li>
+        <li><span class="fcheck">✓</span> <span data-uz="Ko'p til qo'llab-quvvatlash" data-ru="Мультиязычность" data-en="Multi-language">Ko'p til support</span></li>
+        <li><span class="fcheck">✓</span> Custom Web App dizayn</li>
+        <li><span class="fcheck">✓</span> PostgreSQL + backend</li>
+        <li><span class="fcheck">✓</span> <span data-uz="6 oy texnik yordam" data-ru="6 мес поддержки" data-en="6 months support">6 oy texnik yordam</span></li>
+        <li><span class="fcheck">✓</span> <span data-uz="Manba kodi + dokumentatsiya" data-ru="Исходник + документация" data-en="Source code + docs">Manba kodi + dokumentatsiya</span></li>
       </ul>
-      <a href="https://t.me/abdurokhmandev" target="_blank" class="plan-btn plan-btn-outline">
-        <span data-uz="Muzokaraga kirish" data-ru="Обсудить" data-en="Discuss project">Muzokaraga kirish</span> →
+      <a href="https://t.me/abdurokhmandev" target="_blank" class="plan-btn pb-outline">
+        <span data-uz="Muzokaraga kirish" data-ru="Обсудить" data-en="Discuss">Muzokaraga kirish</span> →
       </a>
     </div>
-
   </div>
 
-  <p class="pricing-note r">
-    <span style="font-size:18px">💡</span>
-    <span data-uz="Narx loyihaning murakkabligiga qarab o'zgarishi mumkin. Bepul maslahat uchun Telegram orqali yozing." data-ru="Цена может варьироваться в зависимости от сложности. Пишите в Telegram для бесплатной консультации." data-en="Price may vary based on complexity. Write on Telegram for a free consultation.">Narx loyihaning murakkabligiga qarab o'zgarishi mumkin. Bepul maslahat uchun Telegram orqali yozing.</span>
-  </p>
+  <p class="price-note r">💡 <span data-uz="Narx loyiha murakkabligiga qarab o'zgaradi. Bepul maslahat uchun Telegram orqali yozing." data-ru="Цена зависит от сложности. Пишите в Telegram для бесплатной консультации." data-en="Price varies by complexity. Write on Telegram for a free consultation.">Narx loyiha murakkabligiga qarab o'zgaradi. Bepul maslahat uchun yozing.</span></p>
 </div>
 </section>
 
 <!-- SERVICES -->
-<div style="background:var(--ink2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" id="services">
+<div id="services">
 <section class="sec">
 <div class="wrap">
-  <div class="chip r">⚙️ <span data-uz="XIZMATLAR" data-ru="УСЛУГИ" data-en="SERVICES">XIZMATLAR</span></div>
+  <div class="chip2 r">⚙️ <span data-uz="XIZMATLAR" data-ru="УСЛУГИ" data-en="SERVICES">XIZMATLAR</span></div>
   <h2 class="sec-h r" data-uz="Nima <span>yasayman?</span>" data-ru="Что <span>делаю?</span>" data-en="What do <span>I build?</span>">Nima <span>yasayman?</span></h2>
 
-  <div class="services-list r">
-    <div class="srv-row">
-      <div class="srv-num">01</div>
-      <div class="srv-icon2" style="background:rgba(198,255,74,.08)">🛒</div>
+  <div class="srv-list r">
+    <div class="srv">
+      <div class="srv-n">01</div>
+      <div class="srv-ico" style="background:rgba(30,79,216,.08)">🛒</div>
       <div class="srv-info">
-        <h3 data-uz="Do'kon / E-commerce boti" data-ru="Магазин / E-commerce" data-en="Shop / E-commerce bot">Do'kon / E-commerce boti</h3>
-        <p data-uz="Katalog, savat, buyurtma, Click/Payme/Uzum to'lov, yetkazib berish, admin panel" data-ru="Каталог, корзина, заказ, оплата Click/Payme/Uzum, доставка, admin" data-en="Catalog, cart, orders, Click/Payme payment, delivery, admin panel">Katalog, savat, buyurtma, Click/Payme to'lov, yetkazib berish, admin panel</p>
+        <h3 data-uz="Do'kon / E-commerce boti" data-ru="Магазин / E-commerce" data-en="Shop / E-commerce">Do'kon / E-commerce boti</h3>
+        <p data-uz="Katalog, savat, buyurtma, Click/Payme to'lov, yetkazib berish, admin panel" data-ru="Каталог, корзина, заказы, оплата, доставка, admin" data-en="Catalog, cart, orders, payments, delivery, admin">Katalog, savat, buyurtma, Click/Payme to'lov, yetkazib berish</p>
       </div>
-      <div class="srv-tags2">
-        <span class="stag2">FSM</span><span class="stag2">Payment</span><span class="stag2">Admin</span>
-      </div>
-      <div class="srv-arrow">→</div>
+      <div class="srv-tags"><span class="stag">FSM</span><span class="stag">Payment</span><span class="stag">Admin</span></div>
+      <div class="srv-arr">→</div>
     </div>
-    <div class="srv-row">
-      <div class="srv-num">02</div>
-      <div class="srv-icon2" style="background:rgba(139,92,246,.08)">🤖</div>
+    <div class="srv">
+      <div class="srv-n">02</div>
+      <div class="srv-ico" style="background:rgba(30,79,216,.08)">🤖</div>
       <div class="srv-info">
         <h3>AI Assistant Bot</h3>
-        <p data-uz="GPT-4o, Gemini, Groq bilan integratsiya. Suhbat, tahlil, ovozli xabar, rasm tahlili" data-ru="GPT-4o, Gemini, Groq. Диалог, анализ, голосовые сообщения, изображения" data-en="GPT-4o, Gemini, Groq integration. Chat, analysis, voice messages, image analysis">GPT-4o, Gemini, Groq. Suhbat, tahlil, ovoz, rasm tahlili</p>
+        <p data-uz="GPT-4o, Gemini, Groq. Suhbat, tahlil, ovoz, rasm tahlili" data-ru="GPT-4o, Gemini, Groq. Диалог, анализ, голос, изображения" data-en="GPT-4o, Gemini, Groq. Chat, analysis, voice, images">GPT-4o, Gemini, Groq. Suhbat, tahlil, ovoz, rasm tahlili</p>
       </div>
-      <div class="srv-tags2">
-        <span class="stag2">GPT-4o</span><span class="stag2">Gemini</span><span class="stag2">Groq</span>
-      </div>
-      <div class="srv-arrow">→</div>
+      <div class="srv-tags"><span class="stag">GPT-4o</span><span class="stag">Gemini</span><span class="stag">Groq</span></div>
+      <div class="srv-arr">→</div>
     </div>
-    <div class="srv-row">
-      <div class="srv-num">03</div>
-      <div class="srv-icon2" style="background:rgba(16,185,129,.08)">📋</div>
+    <div class="srv">
+      <div class="srv-n">03</div>
+      <div class="srv-ico" style="background:rgba(30,79,216,.08)">📋</div>
       <div class="srv-info">
-        <h3 data-uz="Ro'yxatga olish boti" data-ru="Бот регистрации" data-en="Registration bot">Ro'yxatga olish boti</h3>
-        <p data-uz="Ko'p bosqichli forma, Google Sheets sinxronizatsiya, Telegram Web App, bildirishnomalar" data-ru="Многоэтапная форма, Google Sheets, Web App, уведомления" data-en="Multi-step form, Google Sheets sync, Telegram Web App, notifications">Ko'p bosqichli forma, Google Sheets, Web App, bildirishnomalar</p>
+        <h3 data-uz="Ro'yxatga olish boti" data-ru="Бот регистрации" data-en="Registration Bot">Ro'yxatga olish boti</h3>
+        <p data-uz="Ko'p bosqichli forma, Google Sheets, Web App, bildirishnomalar" data-ru="Многоэтапная форма, Sheets, Web App, уведомления" data-en="Multi-step form, Sheets, Web App, notifications">Ko'p bosqichli forma, Google Sheets, Web App, bildirishnomalar</p>
       </div>
-      <div class="srv-tags2">
-        <span class="stag2">Sheets</span><span class="stag2">Web App</span>
-      </div>
-      <div class="srv-arrow">→</div>
+      <div class="srv-tags"><span class="stag">Sheets</span><span class="stag">Web App</span></div>
+      <div class="srv-arr">→</div>
     </div>
-    <div class="srv-row">
-      <div class="srv-num">04</div>
-      <div class="srv-icon2" style="background:rgba(251,191,36,.08)">📚</div>
+    <div class="srv">
+      <div class="srv-n">04</div>
+      <div class="srv-ico" style="background:rgba(30,79,216,.08)">📚</div>
       <div class="srv-info">
-        <h3 data-uz="Ta'lim va test boti" data-ru="Образовательный бот" data-en="Education & test bot">Ta'lim va test boti</h3>
-        <p data-uz="Darslar, testlar, AI tekshiruv, reyting, sertifikat, o'qituvchi/o'quvchi rollari, gamifikatsiya" data-ru="Уроки, тесты, AI-проверка, рейтинг, сертификат, роли, геймификация" data-en="Lessons, tests, AI checking, rating, certificate, roles, gamification">Darslar, testlar, AI tekshiruv, reyting, sertifikat, rolllar, gamifikatsiya</p>
+        <h3 data-uz="Ta'lim va test boti" data-ru="Образовательный бот" data-en="Education Bot">Ta'lim va test boti</h3>
+        <p data-uz="Darslar, testlar, AI tekshiruv, reyting, sertifikat, rolllar, gamifikatsiya" data-ru="Уроки, тесты, AI-проверка, рейтинг, геймификация" data-en="Lessons, tests, AI checking, rating, gamification">Darslar, testlar, AI tekshiruv, reyting, gamifikatsiya</p>
       </div>
-      <div class="srv-tags2">
-        <span class="stag2">SQLite</span><span class="stag2">AI</span><span class="stag2">Roles</span>
-      </div>
-      <div class="srv-arrow">→</div>
+      <div class="srv-tags"><span class="stag">SQLite</span><span class="stag">AI</span><span class="stag">Roles</span></div>
+      <div class="srv-arr">→</div>
     </div>
-    <div class="srv-row">
-      <div class="srv-num">05</div>
-      <div class="srv-icon2" style="background:rgba(236,72,153,.08)">📊</div>
+    <div class="srv">
+      <div class="srv-n">05</div>
+      <div class="srv-ico" style="background:rgba(30,79,216,.08)">📊</div>
       <div class="srv-info">
         <h3>CRM / Admin Bot</h3>
-        <p data-uz="Foydalanuvchi boshqaruvi, statistika, ommaviy xabar, guruh moderatsiyasi, hisobotlar" data-ru="Управление пользователями, статистика, рассылка, модерация, отчёты" data-en="User management, statistics, broadcasting, group moderation, reports">Foydalanuvchi boshqaruvi, statistika, xabar yuborish, moderatsiya</p>
+        <p data-uz="Foydalanuvchi boshqaruvi, statistika, ommaviy xabar, moderatsiya" data-ru="Управление, статистика, рассылка, модерация" data-en="User management, stats, broadcasting, moderation">Foydalanuvchi boshqaruvi, statistika, xabar yuborish</p>
       </div>
-      <div class="srv-tags2">
-        <span class="stag2">Broadcast</span><span class="stag2">Stats</span>
-      </div>
-      <div class="srv-arrow">→</div>
+      <div class="srv-tags"><span class="stag">Broadcast</span><span class="stag">Stats</span></div>
+      <div class="srv-arr">→</div>
     </div>
-    <div class="srv-row" style="background:rgba(198,255,74,.03);border-top:1px solid var(--lime-border)">
-      <div class="srv-num" style="color:var(--lime)">✦</div>
-      <div class="srv-icon2" style="background:var(--lime-dim)">✨</div>
+    <div class="srv special">
+      <div class="srv-n" style="color:var(--blue2)">✦</div>
+      <div class="srv-ico" style="background:var(--blue-soft)">✨</div>
       <div class="srv-info">
         <h3 data-uz="Custom Bot — Sizning g'oyangiz" data-ru="Кастомный бот — ваша идея" data-en="Custom Bot — Your idea">Custom Bot — Sizning g'oyangiz</h3>
-        <p data-uz="Har qanday murakkablik, har qanday stack. Birinchi maslahat mutlaqo bepul!" data-ru="Любая сложность, любой стек. Первая консультация абсолютно бесплатна!" data-en="Any complexity, any stack. First consultation is absolutely free!">Har qanday murakkablik, har qanday stack. Birinchi maslahat mutlaqo bepul!</p>
+        <p data-uz="Har qanday murakkablik. Birinchi maslahat mutlaqo bepul!" data-ru="Любая сложность. Первая консультация бесплатно!" data-en="Any complexity. First consultation is free!">Har qanday murakkablik. Birinchi maslahat mutlaqo bepul!</p>
       </div>
-      <div class="srv-tags2">
-        <span class="stag2">Bepul maslahat</span><span class="stag2">Har qanday</span>
-      </div>
-      <div class="srv-arrow" style="color:var(--lime)">→</div>
+      <div class="srv-tags"><span class="stag">Bepul maslahat</span></div>
+      <div class="srv-arr" style="color:var(--blue2)">→</div>
     </div>
   </div>
 </div>
@@ -1029,100 +1123,100 @@ footer {
 </div>
 
 <!-- TECH BENTO -->
-<section class="sec">
+<section class="sec sec-alt">
 <div class="wrap">
-  <div class="chip r">🛠 <span data-uz="TEXNOLOGIYALAR" data-ru="ТЕХНОЛОГИИ" data-en="TECH STACK">TEXNOLOGIYALAR</span></div>
-  <h2 class="sec-h r" data-uz="Men ishlatinadigan <span>stack</span>" data-ru="Мой <span>стек</span>" data-en="My <span>tech stack</span>">Men ishlatinadigan <span>stack</span></h2>
+  <div class="chip2 r">🛠 <span data-uz="TEXNOLOGIYALAR" data-ru="ТЕХНОЛОГИИ" data-en="TECH">TEXNOLOGIYALAR</span></div>
+  <h2 class="sec-h r" data-uz="Men ishlatinadigan <span>stack</span>" data-ru="Мой <span>стек</span>" data-en="My <span>stack</span>">Men ishlatinadigan <span>stack</span></h2>
 
   <div class="bento r">
-    <div class="bento-cell lime">
-      <div class="tech-logo">🐍</div>
-      <div class="tech-name">Python 3.11+</div>
-      <div class="tech-desc" data-uz="Asosiy dasturlash tili. Tez, ishonchli, kuchli." data-ru="Основной язык. Быстро, надёжно, мощно." data-en="Primary language. Fast, reliable, powerful.">Asosiy dasturlash tili. Tez, ishonchli, kuchli.</div>
+    <div class="bc primary">
+      <div class="bc-logo">🐍</div>
+      <div class="bc-name">Python 3.11+</div>
+      <div class="bc-desc" data-uz="Asosiy dasturlash tili. Tez, ishonchli, kuchli." data-ru="Основной язык." data-en="Primary language.">Asosiy dasturlash tili.</div>
     </div>
-    <div class="bento-cell">
-      <div class="tech-logo">✈️</div>
-      <div class="tech-name">aiogram 3.x</div>
-      <div class="tech-desc" data-uz="Async Telegram bot framework" data-ru="Async Telegram bot framework" data-en="Async Telegram bot framework">Async Telegram bot framework</div>
+    <div class="bc">
+      <div class="bc-logo">✈️</div>
+      <div class="bc-name">aiogram 3.x</div>
+      <div class="bc-desc">Async Telegram framework</div>
     </div>
-    <div class="bento-cell">
-      <div class="tech-logo">🔄</div>
-      <div class="tech-name">FSM</div>
-      <div class="tech-desc" data-uz="Murakkab dialog holat boshqaruvi" data-ru="Управление состоянием диалога" data-en="Complex dialog state management">Murakkab dialog holat boshqaruvi</div>
+    <div class="bc">
+      <div class="bc-logo">🔄</div>
+      <div class="bc-name">FSM</div>
+      <div class="bc-desc" data-uz="Dialog holat boshqaruvi" data-ru="Управление состоянием" data-en="Dialog state management">Dialog holat boshqaruvi</div>
     </div>
-    <div class="bento-cell">
-      <div class="tech-logo">🗄️</div>
-      <div class="tech-name">SQLite / PostgreSQL</div>
-      <div class="tech-desc" data-uz="Ma'lumotlar bazasi" data-ru="База данных" data-en="Database">Ma'lumotlar bazasi</div>
+    <div class="bc">
+      <div class="bc-logo">🗄️</div>
+      <div class="bc-name">SQLite / PostgreSQL</div>
+      <div class="bc-desc" data-uz="Ma'lumotlar bazasi" data-ru="База данных" data-en="Database">Ma'lumotlar bazasi</div>
     </div>
-    <div class="bento-cell span2">
-      <div class="bento-big-num">24/7</div>
-      <div class="bento-big-lbl" data-uz="Server orqali uzluksiz ishlash" data-ru="Бесперебойная работа через Server" data-en="Non-stop uptime via Server">Server orqali uzluksiz ishlash</div>
+    <div class="bc s2">
+      <div class="bc-bignum">24/7</div>
+      <div class="bc-biglbl" data-uz="Server orqali uzluksiz ishlash" data-ru="Бесперебойная работа" data-en="Non-stop uptime">Server orqali uzluksiz ishlash</div>
     </div>
-    <div class="bento-cell">
-      <div class="tech-logo">🧠</div>
-      <div class="tech-name">GPT-4o / Gemini</div>
-      <div class="tech-desc" data-uz="AI integratsiya" data-ru="AI интеграция" data-en="AI integration">AI integratsiya</div>
+    <div class="bc">
+      <div class="bc-logo">🧠</div>
+      <div class="bc-name">GPT-4o / Gemini</div>
+      <div class="bc-desc">AI integratsiya</div>
     </div>
-    <div class="bento-cell">
-      <div class="tech-logo">📊</div>
-      <div class="tech-name">Google Sheets</div>
-      <div class="tech-desc" data-uz="Real-time data sinxronizatsiya" data-ru="Синхронизация данных" data-en="Real-time data sync">Real-time sinxronizatsiya</div>
+    <div class="bc">
+      <div class="bc-logo">📊</div>
+      <div class="bc-name">Google Sheets</div>
+      <div class="bc-desc" data-uz="Real-time sinxronizatsiya" data-ru="Синхронизация данных" data-en="Real-time sync">Real-time sinxronizatsiya</div>
     </div>
-    <div class="bento-cell">
-      <div class="tech-logo">⚡</div>
-      <div class="tech-name">Groq AI</div>
-      <div class="tech-desc" data-uz="Ultra-tez AI inference" data-ru="Сверхбыстрый AI" data-en="Ultra-fast AI inference">Ultra-tez AI inference</div>
+    <div class="bc">
+      <div class="bc-logo">⚡</div>
+      <div class="bc-name">Groq AI</div>
+      <div class="bc-desc">Ultra-tez AI inference</div>
     </div>
-    <div class="bento-cell">
-      <div class="tech-logo">🌐</div>
-      <div class="tech-name">Telegram Web App</div>
-      <div class="tech-desc" data-uz="In-bot web interfeys" data-ru="Веб-интерфейс в боте" data-en="In-bot web interface">In-bot web interfeys</div>
+    <div class="bc">
+      <div class="bc-logo">🌐</div>
+      <div class="bc-name">Telegram Web App</div>
+      <div class="bc-desc" data-uz="In-bot web interfeys" data-ru="Веб-интерфейс в боте" data-en="In-bot web UI">In-bot web interfeys</div>
     </div>
-    <div class="bento-cell">
-      <div class="tech-logo">💳</div>
-      <div class="tech-name">Click / Payme / Uzum</div>
-      <div class="tech-desc" data-uz="O'zbekiston to'lov tizimlari" data-ru="Платёжные системы Узбекистана" data-en="Uzbekistan payment systems">O'zbekiston to'lov tizimlari</div>
+    <div class="bc">
+      <div class="bc-logo">💳</div>
+      <div class="bc-name">Click / Payme</div>
+      <div class="bc-desc" data-uz="O'zbekiston to'lov tizimlari" data-ru="Платёжные системы" data-en="UZ payment systems">O'zbekiston to'lov tizimlari</div>
     </div>
   </div>
 </div>
 </section>
 
 <!-- REVIEWS -->
-<div style="background:var(--ink2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" id="reviews">
+<div id="reviews">
 <section class="sec">
 <div class="wrap">
-  <div class="chip r">💬 <span data-uz="MIJOZLAR FIKRI" data-ru="ОТЗЫВЫ" data-en="REVIEWS">MIJOZLAR FIKRI</span></div>
+  <div class="chip2 r">💬 <span data-uz="MIJOZLAR FIKRI" data-ru="ОТЗЫВЫ" data-en="REVIEWS">MIJOZLAR FIKRI</span></div>
   <h2 class="sec-h r" data-uz="Ular nima <span>deyishadi</span>" data-ru="Что они <span>говорят</span>" data-en="What they <span>say</span>">Ular nima <span>deyishadi</span></h2>
 
-  <div class="reviews-grid r">
-    <div class="review">
-      <div class="rev-stars">★★★★★</div>
-      <p class="rev-text" data-uz="Bot juda tez va sifatli yasaldi. Aytganimdan ko'ra ko'proq funksiya qo'shdi, hatto byudjetni ham oshirmadi. Albatta keyingi loyihani ham shunga beraman!" data-ru="Бот был создан быстро и качественно. Добавил больше функций, чем просил, и не превысил бюджет. Следующий проект тоже ему!" data-en="The bot was built fast and with quality. Added more features than I asked for without exceeding the budget. Next project goes to him too!">Bot juda tez va sifatli yasaldi. Aytganimdan ko'ra ko'proq funksiya qo'shdi, byudjetni ham oshirmadi!</p>
+  <div class="rev-grid r">
+    <div class="rev">
+      <div class="rev-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="rev-txt" data-uz="Bot juda tez va sifatli yasaldi. Aytganimdan ko'ra ko'proq funksiya qo'shdi, byudjetni ham oshirmadi!" data-ru="Бот создан быстро и качественно. Добавил больше функций и не превысил бюджет!" data-en="Bot was built fast and with quality. Added more features without exceeding budget!">Bot juda tez va sifatli yasaldi. Aytganimdan ko'ra ko'proq funksiya qo'shdi!</p>
       <div class="rev-author">
-        <div class="rev-av" style="background:rgba(198,255,74,.12);color:var(--lime)">A</div>
+        <div class="rev-av" style="background:rgba(30,79,216,.15);color:#6B9FFF">A</div>
         <div>
           <div class="rev-name">Akbar T.</div>
-          <div class="rev-role" data-uz="Online do'kon egasi · Toshkent" data-ru="Владелец магазина · Ташкент" data-en="Online shop owner · Tashkent">Online do'kon egasi · Toshkent</div>
+          <div class="rev-role" data-uz="Online do'kon egasi · Toshkent" data-ru="Владелец магазина · Ташкент" data-en="Shop owner · Tashkent">Online do'kon egasi · Toshkent</div>
         </div>
       </div>
     </div>
-    <div class="review">
-      <div class="rev-stars">★★★★★</div>
-      <p class="rev-text" data-uz="Ro'yxatga olish botimiz uchun ideal yechim. Google Sheets integratsiyasi zo'r ishlayapti, har bir ariza avtomatik keladi. Muammosiz, o'z vaqtida topshirildi." data-ru="Идеальное решение для регистрации. Google Sheets работает отлично, заявки приходят автоматически. Сдал вовремя, без проблем." data-en="Perfect solution for our registration. Google Sheets works great, applications arrive automatically. Delivered on time, no issues.">Ro'yxatga olish botimiz uchun ideal. Sheets integratsiya zo'r, arizalar avtomatik keladi. Muammosiz topshirildi.</p>
+    <div class="rev">
+      <div class="rev-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="rev-txt" data-uz="Ro'yxatga olish botimiz uchun ideal. Sheets integratsiya zo'r, arizalar avtomatik keladi." data-ru="Идеально для регистрации. Sheets отлично работает, заявки приходят автоматически." data-en="Perfect for registration. Sheets works great, applications arrive automatically.">Ro'yxatga olish botimiz uchun ideal. Google Sheets integratsiya a'lo, arizalar avtomatik keladi.</p>
       <div class="rev-author">
-        <div class="rev-av" style="background:rgba(139,92,246,.12);color:#A78BFA">S</div>
+        <div class="rev-av" style="background:rgba(52,211,153,.12);color:#34D399">S</div>
         <div>
           <div class="rev-name">Sarvar M.</div>
-          <div class="rev-role" data-uz="Ta'lim markazi direktori · Samarqand" data-ru="Директор учебного центра · Самарканд" data-en="Education center director · Samarkand">Ta'lim markazi direktori · Samarqand</div>
+          <div class="rev-role" data-uz="Ta'lim markazi direktori · Samarqand" data-ru="Директор учебного центра · Самарканд" data-en="Education center · Samarkand">Ta'lim markazi direktori · Samarqand</div>
         </div>
       </div>
     </div>
-    <div class="review">
-      <div class="rev-stars">★★★★★</div>
-      <p class="rev-text" data-uz="AI bot yasadi — mijozlarim soni bir oyda 2 baravarga ko'paydi! Savollar, buyurtmalar, hammasiga bot javob beryapti. Vaqtim bo'shadi, daromadim oshdi." data-ru="Сделал AI-бота — за месяц клиентов стало в 2 раза больше! Вопросы, заказы — всё через бота. Освободил время, вырос доход." data-en="Made an AI bot — customers doubled in one month! Questions, orders — all through the bot. Freed my time, increased revenue.">AI bot yasadi — bir oyda mijozlarim 2 baravarga ko'paydi! Vaqtim bo'shadi, daromadim oshdi.</p>
+    <div class="rev">
+      <div class="rev-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="rev-txt" data-uz="AI bot yasadi — bir oyda mijozlarim 2 baravarga ko'paydi! Vaqtim bo'shadi, daromadim oshdi." data-ru="AI бот — за месяц клиентов в 2 раза больше! Освободил время, вырос доход." data-en="AI bot — customers doubled in one month! Freed my time, revenue grew.">AI bot yasadi — bir oyda mijozlarim 2 baravarga ko'paydi! Vaqtim bo'shadi.</p>
       <div class="rev-author">
-        <div class="rev-av" style="background:rgba(16,185,129,.12);color:#10B981">Z</div>
+        <div class="rev-av" style="background:rgba(252,211,77,.1);color:#FCD34D">Z</div>
         <div>
           <div class="rev-name">Ziyod K.</div>
           <div class="rev-role" data-uz="Kurs egasi · Toshkent" data-ru="Владелец курсов · Ташкент" data-en="Course owner · Tashkent">Kurs egasi · Toshkent</div>
@@ -1135,134 +1229,135 @@ footer {
 </div>
 
 <!-- PROCESS -->
-<section class="sec">
+<section class="sec sec-alt">
 <div class="wrap">
-  <div class="chip r">🔄 <span data-uz="JARAYON" data-ru="ПРОЦЕСС" data-en="PROCESS">JARAYON</span></div>
+  <div class="chip2 r">🔄 <span data-uz="JARAYON" data-ru="ПРОЦЕСС" data-en="PROCESS">JARAYON</span></div>
   <h2 class="sec-h r" data-uz="Qanday <span>ishlaydi?</span>" data-ru="Как <span>это работает?</span>" data-en="How does <span>it work?</span>">Qanday <span>ishlaydi?</span></h2>
-  <div class="process-grid r">
+  <div class="proc-grid r">
     <div class="proc">
-      <div class="proc-n">01</div>
+      <div class="proc-ghost">01</div>
       <div class="proc-line"></div>
-      <h3 data-uz="Ariza yuboring" data-ru="Заявка" data-en="Send a request">Ariza yuboring</h3>
-      <p data-uz="Telegram, Google Form yoki email orqali bot haqida qisqacha yozing. Birinchi maslahat bepul." data-ru="Напишите о боте через Telegram, форму или email. Первая консультация бесплатно." data-en="Write about the bot via Telegram, form or email. First consultation is free.">Telegram, forma yoki email orqali yozing. Birinchi maslahat bepul.</p>
+      <h3 data-uz="Ariza yuboring" data-ru="Заявка" data-en="Send request">Ariza yuboring</h3>
+      <p data-uz="Telegram, forma yoki email orqali yozing. Birinchi maslahat bepul." data-ru="Напишите через Telegram, форму или email. Первая консультация бесплатно." data-en="Write via Telegram, form or email. First consultation free.">Telegram, forma yoki email orqali yozing. Birinchi maslahat bepul.</p>
     </div>
     <div class="proc">
-      <div class="proc-n">02</div>
+      <div class="proc-ghost">02</div>
       <div class="proc-line"></div>
-      <h3 data-uz="Taklif va kelishuv" data-ru="Предложение" data-en="Offer & agreement">Taklif va kelishuv</h3>
-      <p data-uz="24 soat ichida texnik taklif, narx va muddat. Kelishsak, ishga kirishamiz." data-ru="За 24 часа — предложение, цена и сроки. Договорились — начинаем." data-en="Within 24 hours — offer, price and timeline. Agreed — we start.">24 soat ichida taklif, narx va muddat. Kelishsak, ishga kirishamiz.</p>
+      <h3 data-uz="Taklif va kelishuv" data-ru="Предложение" data-en="Proposal">Taklif va kelishuv</h3>
+      <p data-uz="24 soat ichida narx va muddat. Kelishsak, ishga kirishamiz." data-ru="За 24 часа — цена и сроки. Договорились — начинаем." data-en="Within 24h — price and timeline. Agreed — we start.">24 soat ichida narx va muddat. Kelishsak, ishga kirishamiz.</p>
     </div>
     <div class="proc">
-      <div class="proc-n">03</div>
+      <div class="proc-ghost">03</div>
       <div class="proc-line"></div>
       <h3 data-uz="Ishlab chiqish" data-ru="Разработка" data-en="Development">Ishlab chiqish</h3>
-      <p data-uz="3–7 kun. Siz doimiy xabardor bo'lasiz. Oraliq versiyani ko'rish mumkin." data-ru="3–7 дней. Вы в курсе всего. Можно посмотреть промежуточный вариант." data-en="3–7 days. You stay informed. Intermediate version is available.">3–7 kun. Doimiy xabar beraman. Oraliq versiyani ko'rishingiz mumkin.</p>
+      <p data-uz="3–7 kun. Doimiy xabar beraman. Oraliq versiyani ko'rishingiz mumkin." data-ru="3–7 дней. Вы в курсе всего. Можно посмотреть промежуточный вариант." data-en="3–7 days. Stay informed. Preview available.">3–7 kun. Doimiy xabar beraman. Oraliq versiyani ko'rishingiz mumkin.</p>
     </div>
     <div class="proc">
-      <div class="proc-n">04</div>
+      <div class="proc-ghost">04</div>
       <div class="proc-line"></div>
       <h3 data-uz="Topshirish" data-ru="Сдача" data-en="Delivery">Topshirish</h3>
-      <p data-uz="Bot deploy qilinadi, manba kodi va dokumentatsiya topshiriladi. Kafolat muddati boshlanadi." data-ru="Бот деплоится, код и документация передаются. Начинается гарантийный срок." data-en="Bot deployed, source code and docs handed over. Warranty period begins.">Deploy, kod va dokumentatsiya topshiriladi. Kafolat muddati boshlanadi.</p>
+      <p data-uz="Deploy, kod va dokumentatsiya topshiriladi. Kafolat muddati boshlanadi." data-ru="Deploy, код и документация. Начинается гарантийный срок." data-en="Deploy, code and docs. Warranty begins.">Deploy, kod va dokumentatsiya topshiriladi. Kafolat muddati boshlanadi.</p>
     </div>
   </div>
 </div>
 </section>
 
 <!-- FAQ -->
-<div style="background:var(--ink2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
 <section class="sec">
 <div class="wrap">
-  <div class="chip r">❓ <span data-uz="SAVOL-JAVOB" data-ru="FAQ" data-en="FAQ">SAVOL-JAVOB</span></div>
+  <div class="chip2 r">❓ <span data-uz="SAVOL-JAVOB" data-ru="FAQ" data-en="FAQ">SAVOL-JAVOB</span></div>
   <h2 class="sec-h r" data-uz="Ko'p so'raladigan <span>savollar</span>" data-ru="Часто задаваемые <span>вопросы</span>" data-en="Frequently asked <span>questions</span>">Ko'p so'raladigan <span>savollar</span></h2>
   <div class="faq-list r">
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span class="faq-q-text" data-uz="Bot tayyor bo'lgunicha qancha vaqt ketadi?" data-ru="Сколько времени уходит на бота?" data-en="How long does it take to build a bot?">Bot tayyor bo'lgunicha qancha vaqt ketadi?</span>
-        <span class="faq-icon">+</span>
+        <span class="faq-q-txt" data-uz="Bot tayyor bo'lgunicha qancha vaqt ketadi?" data-ru="Сколько времени уходит на бота?" data-en="How long to build a bot?">Bot tayyor bo'lgunicha qancha vaqt ketadi?</span>
+        <span class="faq-ico">+</span>
       </div>
-      <div class="faq-a" data-uz="Oddiy bot 3–5 kun, murakkab loyihalar 7–14 kun ichida tayyor bo'ladi. Muddatni avvaldan kelishib olamiz va men har doim o'z vaqtimda topshiraman." data-ru="Простой бот — 3–5 дней, сложные проекты — 7–14 дней. Сроки обсуждаем заранее, я всегда сдаю в срок." data-en="Simple bot — 3–5 days, complex projects — 7–14 days. We agree on the deadline in advance, and I always deliver on time.">Oddiy bot 3–5 kun, murakkab loyihalar 7–14 kun ichida tayyor bo'ladi. Muddatni avvaldan kelishib olamiz.</div>
+      <div class="faq-a" data-uz="Oddiy bot 3–5 kun, murakkab loyihalar 7–14 kun. Muddatni avvaldan kelishib olamiz." data-ru="Простой бот — 3–5 дней, сложные — 7–14 дней. Сроки обсуждаем заранее." data-en="Simple bot 3–5 days, complex 7–14 days. We agree on deadline in advance.">Oddiy bot 3–5 kun, murakkab loyihalar 7–14 kun. Muddatni avvaldan kelishib olamiz.</div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span class="faq-q-text" data-uz="Narxga nima kiradi?" data-ru="Что входит в цену?" data-en="What's included in the price?">Narxga nima kiradi?</span>
-        <span class="faq-icon">+</span>
+        <span class="faq-q-txt" data-uz="Narxga nima kiradi?" data-ru="Что входит в цену?" data-en="What's included?">Narxga nima kiradi?</span>
+        <span class="faq-ico">+</span>
       </div>
-      <div class="faq-a" data-uz="Narxga to'liq ishlab chiqish, serverga joylash, manba kodi topshirish va kafolat muddatida texnik yordam kiradi. Yashirin to'lovlar yo'q." data-ru="В цену входит полная разработка, деплой, передача кода и техподдержка в гарантийный период. Скрытых платежей нет." data-en="The price includes full development, deployment, code handover and support during the warranty period. No hidden fees.">Narxga to'liq ishlab chiqish, deploy, manba kodi va kafolat muddatida texnik yordam kiradi. Yashirin to'lovlar yo'q.</div>
+      <div class="faq-a" data-uz="To'liq ishlab chiqish, serverga joylash, manba kodi va kafolat muddatida texnik yordam. Yashirin to'lovlar yo'q." data-ru="Полная разработка, деплой, код и поддержка в гарантийный период. Без скрытых платежей." data-en="Full development, deployment, code and warranty support. No hidden fees.">To'liq ishlab chiqish, deploy, manba kodi va kafolat muddatida texnik yordam. Yashirin to'lovlar yo'q.</div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span class="faq-q-text" data-uz="Bot qancha vaqt ishlaydi (uptime)?" data-ru="Сколько работает бот (uptime)?" data-en="How long does the bot run (uptime)?">Bot qancha vaqt ishlaydi (uptime)?</span>
-        <span class="faq-icon">+</span>
+        <span class="faq-q-txt" data-uz="Bot qancha vaqt ishlaydi (uptime)?" data-ru="Сколько работает бот?" data-en="Bot uptime?">Bot qancha vaqt ishlaydi?</span>
+        <span class="faq-ico">+</span>
       </div>
-      <div class="faq-a" data-uz="Server platformasida 24/7 uzluksiz ishlaydi. Texnik nosozlik bo'lsa, men darhol tuzataman. Bu kafolat muddatiga kiradi." data-ru="Работает 24/7 на Server. При сбое — сразу исправляю. Это включено в гарантийный период." data-en="Runs 24/7 on Server. If there's a bug — I fix it immediately. This is included in the warranty period.">Server platformasida 24/7 uzluksiz ishlaydi. Texnik nosozlik bo'lsa, darhol tuzataman.</div>
+      <div class="faq-a" data-uz="Server platformasida 24/7 uzluksiz. Nosozlik bo'lsa, darhol tuzataman." data-ru="24/7 на Server. При сбое — сразу исправляю." data-en="24/7 on Server. If bug — I fix immediately.">Server platformasida 24/7 uzluksiz. Nosozlik bo'lsa, darhol tuzataman.</div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span class="faq-q-text" data-uz="Manba kodi menga beriladi?" data-ru="Исходный код мне передаётся?" data-en="Will I receive the source code?">Manba kodi menga beriladi?</span>
-        <span class="faq-icon">+</span>
+        <span class="faq-q-txt" data-uz="Manba kodi menga beriladi?" data-ru="Исходный код передаётся?" data-en="Do I get source code?">Manba kodi menga beriladi?</span>
+        <span class="faq-ico">+</span>
       </div>
-      <div class="faq-a" data-uz="Ha, barcha paketlarda manba kodi sizga beriladi. Pro va Enterprise paketlarida to'liq dokumentatsiya ham qo'shiladi." data-ru="Да, во всех пакетах исходный код передаётся вам. В Pro и Enterprise добавляется полная документация." data-en="Yes, in all packages the source code is handed to you. Pro and Enterprise also include full documentation.">Ha, barcha paketlarda manba kodi beriladi. Pro va Enterprise da dokumentatsiya ham qo'shiladi.</div>
+      <div class="faq-a" data-uz="Ha, barcha paketlarda manba kodi beriladi. Pro va Enterprise da dokumentatsiya ham." data-ru="Да, во всех пакетах. В Pro и Enterprise добавляется документация." data-en="Yes, in all packages. Pro and Enterprise also include full documentation.">Ha, barcha paketlarda. Pro va Enterprise da dokumentatsiya ham qo'shiladi.</div>
     </div>
     <div class="faq-item" style="border-bottom:none">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span class="faq-q-text" data-uz="To'lov qanday amalga oshiriladi?" data-ru="Как производится оплата?" data-en="How is payment made?">To'lov qanday amalga oshiriladi?</span>
-        <span class="faq-icon">+</span>
+        <span class="faq-q-txt" data-uz="To'lov qanday amalga oshiriladi?" data-ru="Как производится оплата?" data-en="How is payment made?">To'lov qanday?</span>
+        <span class="faq-ico">+</span>
       </div>
-      <div class="faq-a" data-uz="50% oldindan, 50% bot tayyor bo'lganda. Click, Payme, yoki bank o'tkazmasi orqali to'lash mumkin." data-ru="50% предоплата, 50% после сдачи. Оплата через Click, Payme, или банковский перевод." data-en="50% upfront, 50% upon delivery. Payment via Click, Payme, or bank transfer.">50% oldindan, 50% bot tayyor bo'lganda. Click, Payme, yoki bank o'tkazmasi.</div>
+      <div class="faq-a" data-uz="50% oldindan, 50% bot tayyor bo'lganda. Click, Payme, yoki bank o'tkazmasi." data-ru="50% предоплата, 50% после. Click, Payme или банк." data-en="50% upfront, 50% on delivery. Click, Payme or bank transfer.">50% oldindan, 50% bot tayyor bo'lganda. Click, Payme, yoki bank o'tkazmasi.</div>
     </div>
   </div>
 </div>
 </section>
-</div>
 
 <!-- CTA BANNER -->
-<section style="padding:40px 0">
+<section style="padding:20px 0 60px">
 <div class="wrap">
-  <div class="cta-banner r">
-    <div class="cta-left">
-      <h2 data-uz="Botingizni bugun boshlaylik." data-ru="Начнём ваш бот сегодня." data-en="Let's start your bot today.">Botingizni bugun boshlaylik.</h2>
-      <p data-uz="Birinchi maslahat bepul. Hech qanday majburiyat yo'q." data-ru="Первая консультация бесплатна. Никаких обязательств." data-en="First consultation is free. No commitments.">Birinchi maslahat bepul. Hech qanday majburiyat yo'q.</p>
-    </div>
-    <div class="cta-right">
-      <a href="https://t.me/abdurokhmandev" target="_blank" class="cta-btn">
-        ✈️ <span data-uz="Telegram orqali yozish" data-ru="Написать в Telegram" data-en="Write on Telegram">Telegram orqali yozish</span>
-      </a>
+  <div class="cta-wrap r">
+    <div class="cta-banner">
+      <div class="cta-geo"></div>
+      <div class="cta-left">
+        <h2 data-uz="Botingizni bugun boshlaylik." data-ru="Начнём ваш бот сегодня." data-en="Let's start your bot today.">Botingizni bugun boshlaylik.</h2>
+        <p data-uz="Birinchi maslahat bepul. Hech qanday majburiyat yo'q." data-ru="Первая консультация бесплатна. Без обязательств." data-en="First consultation free. No commitments.">Birinchi maslahat bepul. Hech qanday majburiyat yo'q.</p>
+      </div>
+      <div class="cta-r">
+        <a href="https://t.me/abdurokhmandev" target="_blank" class="cta-btn">
+          ✈️ <span data-uz="Telegram orqali yozish" data-ru="Написать в Telegram" data-en="Write on Telegram">Telegram orqali yozish</span>
+        </a>
+      </div>
     </div>
   </div>
 </div>
 </section>
 
 <!-- ORDER -->
-<div class="order-section" id="order">
+<div class="sec-alt" id="order">
 <section class="sec">
 <div class="wrap">
-  <div class="chip r">📩 <span data-uz="BUYURTMA" data-ru="ЗАКАЗ" data-en="ORDER">BUYURTMA</span></div>
+  <div class="chip2 r">📩 <span data-uz="BUYURTMA" data-ru="ЗАКАЗ" data-en="ORDER">BUYURTMA</span></div>
   <h2 class="sec-h r" data-uz="Qanday <span>buyurtma berish</span> mumkin?" data-ru="Как <span>оставить заявку?</span>" data-en="How to <span>place an order?</span>">Qanday <span>buyurtma berish</span> mumkin?</h2>
-  <p class="sec-sub r" data-uz="Uchta qulay usuldan birini tanlang." data-ru="Выберите один из трёх удобных способов." data-en="Choose one of three convenient methods.">Uchta qulay usuldan birini tanlang.</p>
+  <p class="sec-sub r" data-uz="Uchta qulay usuldan birini tanlang." data-ru="Выберите удобный способ." data-en="Choose a convenient method.">Uchta qulay usuldan birini tanlang.</p>
   <div class="order-grid r">
     <div class="ocard">
-      <div class="ocard-num" data-uz="01 / ENG TEZKOR" data-ru="01 / БЫСТРЕЕ ВСЕГО" data-en="01 / FASTEST">01 / ENG TEZKOR</div>
-      <div class="ocard-icon2">✈️</div>
+      <div class="ocard-num" data-uz="01 / ENG TEZKOR" data-ru="01 / БЫСТРЕЕ" data-en="01 / FASTEST">01 / ENG TEZKOR</div>
+      <div class="ocard-ico">✈️</div>
       <h3>Telegram</h3>
-      <p data-uz="1–3 soat ichida javob beraman. Eng qulay va tez usul." data-ru="Отвечу в течение 1–3 часов. Самый удобный способ." data-en="I'll reply within 1–3 hours. The most convenient and fast method.">1–3 soat ichida javob beraman. Eng qulay va tez usul.</p>
-      <div class="ocard-detail" data-uz="@abdurokhmandev ga yozing" data-ru="Пишите @abdurokhmandev" data-en="Write to @abdurokhmandev">@abdurokhmandev ga yozing</div>
-      <a href="https://t.me/abdurokhmandev" target="_blank" class="obtn2 obtn-lime2">✈️ <span data-uz="Telegram orqali yozish" data-ru="Написать в Telegram" data-en="Write on Telegram">Telegram orqali yozish</span></a>
+      <p data-uz="1–3 soat ichida javob beraman. Eng qulay va tez usul." data-ru="Отвечу в течение 1–3 часов." data-en="Reply within 1–3 hours. Most convenient.">1–3 soat ichida javob beraman. Eng qulay va tez usul.</p>
+      <div class="ocard-det" data-uz="@abdurokhmandev ga yozing" data-ru="@abdurokhmandev" data-en="Write @abdurokhmandev">@abdurokhmandev ga yozing</div>
+      <a href="https://t.me/abdurokhmandev" target="_blank" class="obtn obtn-primary">✈️ <span data-uz="Telegram orqali yozish" data-ru="Написать" data-en="Write on Telegram">Telegram orqali yozish</span></a>
     </div>
     <div class="ocard">
       <div class="ocard-num" data-uz="02 / BATAFSIL" data-ru="02 / ПОДРОБНО" data-en="02 / DETAILED">02 / BATAFSIL</div>
-      <div class="ocard-icon2">📋</div>
+      <div class="ocard-ico">📋</div>
       <h3>Google Form</h3>
-      <p data-uz="Loyiha haqida batafsil ma'lumot yuboring. Barcha ma'lumotlar avtomatik emailga keladi." data-ru="Отправьте подробную информацию о проекте. Данные придут автоматически." data-en="Send detailed information about the project. All data arrives automatically.">Loyiha haqida batafsil yuboring. Ma'lumotlar avtomatik keladi.</p>
-      <div class="ocard-detail" data-uz="Forma to'ldirish 2 daqiqa" data-ru="Форма заполняется 2 минуты" data-en="Form takes 2 minutes">Forma to'ldirish 2 daqiqa</div>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSc-n2YyBjR94rTKSGKBdzSgFUrVLqBj4CBZIfbKCX4c1Cq6tA/viewform" target="_blank" class="obtn2 obtn-out2">📋 <span data-uz="Formani to'ldirish" data-ru="Заполнить форму" data-en="Fill the form">Formani to'ldirish</span></a>
+      <p data-uz="Loyiha haqida batafsil yuboring. Ma'lumotlar avtomatik keladi." data-ru="Отправьте подробную информацию о проекте." data-en="Send detailed project information.">Loyiha haqida batafsil yuboring. Ma'lumotlar avtomatik keladi.</p>
+      <div class="ocard-det" data-uz="Forma to'ldirish 2 daqiqa" data-ru="2 минуты" data-en="2 minutes to fill">Forma to'ldirish 2 daqiqa</div>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSc-n2YyBjR94rTKSGKBdzSgFUrVLqBj4CBZIfbKCX4c1Cq6tA/viewform" target="_blank" class="obtn obtn-outline">📋 <span data-uz="Formani to'ldirish" data-ru="Заполнить форму" data-en="Fill the form">Formani to'ldirish</span></a>
     </div>
     <div class="ocard">
       <div class="ocard-num" data-uz="03 / RASMIY" data-ru="03 / ОФИЦИАЛЬНО" data-en="03 / OFFICIAL">03 / RASMIY</div>
-      <div class="ocard-icon2">📧</div>
+      <div class="ocard-ico">📧</div>
       <h3>Email</h3>
-      <p data-uz="Rasmiy arizalar uchun. Loyiha tavsifi, byudjet va muddatni yozing." data-ru="Для официальных заявок. Опишите проект, бюджет и сроки." data-en="For official requests. Describe the project, budget and deadline.">Rasmiy arizalar uchun. Loyiha tavsifi, byudjet va muddatni yozing.</p>
-      <div class="ocard-detail">abdurrohmona654@gmail.com</div>
-      <a href="mailto:abdurrohmona654@gmail.com" class="obtn2 obtn-out2">📧 <span data-uz="Email yozish" data-ru="Написать Email" data-en="Send Email">Email yozish</span></a>
+      <p data-uz="Rasmiy arizalar uchun. Loyiha tavsifi, byudjet va muddatni yozing." data-ru="Для официальных заявок. Проект, бюджет, сроки." data-en="For official requests. Project, budget, deadline.">Rasmiy arizalar uchun. Loyiha, byudjet va muddatni yozing.</p>
+      <div class="ocard-det">abdurrohmona654@gmail.com</div>
+      <a href="mailto:abdurrohmona654@gmail.com" class="obtn obtn-outline">📧 <span data-uz="Email yozish" data-ru="Написать Email" data-en="Send Email">Email yozish</span></a>
     </div>
   </div>
 </div>
@@ -1271,14 +1366,16 @@ footer {
 
 <!-- FOOTER -->
 <div style="border-top:1px solid var(--border)">
-<footer>
+<div class="footer-wrap">
   <div class="foot-top">
     <div>
       <div class="foot-logo">
-        <div class="nav-logo-dot"></div>
+        <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 80 L40 20 L60 20 L50 42 L70 20 L88 20 L88 42 L70 42 L85 80 L65 80 L55 55 L38 80Z" fill="white" opacity="0.85"/>
+        </svg>
         Abdurahmon.dev
       </div>
-      <p class="foot-tagline" data-uz="Telegram bot developer. Python · Aiogram · 24/7 Server. Toshkent, O'zbekiston." data-ru="Telegram bot developer. Python · Aiogram · 24/7 Server. Ташкент, Узбекистан." data-en="Telegram bot developer. Python · Aiogram · 24/7 Server. Tashkent, Uzbekistan.">Telegram bot developer. Python · Aiogram · 24/7 Server. Toshkent, O'zbekiston.</p>
+      <p class="foot-tag" data-uz="Telegram bot developer. Python · Aiogram · 24/7 Server. Toshkent, O'zbekiston." data-ru="Telegram bot developer. Ташкент, Узбекистан." data-en="Telegram bot developer. Tashkent, Uzbekistan.">Telegram bot developer. Python · Aiogram · 24/7 Server. Toshkent, O'zbekiston.</p>
     </div>
     <div class="foot-col">
       <h4 data-uz="NAVIGATSIYA" data-ru="НАВИГАЦИЯ" data-en="NAVIGATE">NAVIGATSIYA</h4>
@@ -1289,29 +1386,35 @@ footer {
     </div>
     <div class="foot-col">
       <h4 data-uz="BOG'LANISH" data-ru="КОНТАКТЫ" data-en="CONTACT">BOG'LANISH</h4>
-      <a href="https://t.me/abdurokhmandev" target="_blank">Telegram: @abdurokhmandev</a>
+      <a href="https://t.me/abdurokhmandev" target="_blank">@abdurokhmandev</a>
       <a href="mailto:abdurrohmona654@gmail.com">abdurrohmona654@gmail.com</a>
-      <a href="#order" data-uz="Buyurtma berish" data-ru="Оставить заявку" data-en="Place an order">Buyurtma berish</a>
+      <a href="#order" data-uz="Buyurtma berish" data-ru="Заказать" data-en="Place an order">Buyurtma berish</a>
     </div>
   </div>
   <div class="foot-bottom">
-    <span data-uz="© 2025 Abdurahmon.dev · Toshkent, O'zbekiston" data-ru="© 2025 Abdurahmon.dev · Ташкент, Узбекистан" data-en="© 2025 Abdurahmon.dev · Tashkent, Uzbekistan">© 2025 Abdurahmon.dev · Toshkent, O'zbekiston</span>
-    <div class="foot-socials">
-      <a href="https://t.me/abdurokhmandev" class="foot-social" target="_blank">✈️</a>
-      <a href="mailto:abdurrohmona654@gmail.com" class="foot-social">📧</a>
+    <span data-uz="© 2025 Abdurahmon.dev · Toshkent, O'zbekiston" data-ru="© 2025 Abdurahmon.dev · Ташкент" data-en="© 2025 Abdurahmon.dev · Tashkent">© 2025 Abdurahmon.dev · Toshkent, O'zbekiston</span>
+    <div class="foot-soc">
+      <a href="https://t.me/abdurokhmandev" class="foot-soc-btn" target="_blank">✈️</a>
+      <a href="mailto:abdurrohmona654@gmail.com" class="foot-soc-btn">📧</a>
     </div>
   </div>
-</footer>
+</div>
 </div>
 
 <script>
 /* CURSOR */
 const cur=document.getElementById('cur'),curR=document.getElementById('curR');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(animRing);}
-animRing();
-document.querySelectorAll('a,button,.faq-q,.srv-row').forEach(el=>{
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  curR.style.left=rx+'px';curR.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('a,button,.faq-q,.srv,.proj').forEach(el=>{
   el.addEventListener('mouseenter',()=>cur.classList.add('big'));
   el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
 });
@@ -1320,24 +1423,24 @@ document.querySelectorAll('a,button,.faq-q,.srv-row').forEach(el=>{
 function setLang(l){
   document.querySelectorAll('[data-uz]').forEach(el=>{
     const v=el.dataset[l];
-    if(v){ if(v.includes('<')) el.innerHTML=v; else el.textContent=v; }
+    if(v){if(v.includes('<'))el.innerHTML=v;else el.textContent=v;}
   });
-  document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase()===l));
+  document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on',b.textContent.trim().toLowerCase()===l));
   document.documentElement.lang=l==='ru'?'ru':l==='en'?'en':'uz';
 }
 
 /* SCROLL REVEAL */
 const ro=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});
-},{threshold:.1});
+},{threshold:.08});
 document.querySelectorAll('.r').forEach(el=>ro.observe(el));
 
 /* FAQ */
 function toggleFaq(btn){
   const item=btn.parentElement;
-  const wasOpen=item.classList.contains('open');
+  const was=item.classList.contains('open');
   document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
-  if(!wasOpen)item.classList.add('open');
+  if(!was)item.classList.add('open');
 }
 </script>
 </body>
