@@ -8,5 +8,19 @@
         { "key": "Content-Security-Policy", "value": "frame-ancestors *" }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://botttttttt-production.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/webappregister",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/marketingadmin",
+      "destination": "/admin.html"
+    }
   ]
 }
