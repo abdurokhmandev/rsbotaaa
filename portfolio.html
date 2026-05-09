@@ -869,20 +869,38 @@ nav{
    RESPONSIVE
 ═══════════════════════════════════ */
 @media(max-width:900px){
+  /* Kursor mobile fix */
+  body, a, button, .lng, .nav-cta, .plan-btn, .obtn, .cf-close, .faq-q, .srv, .proj { cursor: auto !important; }
+  #cur, #curR { display: none !important; }
+
   nav{padding:0 20px;}
   .nav-links{display:none;}
   .hero{grid-template-columns:1fr;padding:120px 20px 60px;}
   .hero-right{display:none;}
   .wrap{padding:0 20px;}
   .sec{padding:80px 0;}
+
+  /* Services mobile fix */
+  .srv { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    padding: 30px 24px; 
+    gap: 16px; 
+    position: relative;
+  }
+  .srv-n { display: none; }
+  .srv-arr { position: absolute; top: 30px; right: 24px; font-size: 20px; }
+  .srv-info h3 { font-size: 18px; }
+  .srv-tags { margin-top: 4px; }
+
   .proj-grid{grid-template-columns:1fr;}
   .proj.wide{grid-column:auto;display:flex;flex-direction:column;}
   .plans{grid-template-columns:1fr;}
-  .proc-grid{grid-template-columns:1fr 1fr;}
+  .proc-grid{grid-template-columns:1fr;}
   .rev-grid{grid-template-columns:1fr;}
   .order-grid{grid-template-columns:1fr;}
-  .bento{grid-template-columns:1fr 1fr;}
-  .bc.s2{grid-column:span 2;}
+  .bento{grid-template-columns:1fr;}
+  .bc.s2{grid-column:span 1;}
   .cta-banner{flex-direction:column;gap:32px;padding:48px 28px;}
   .footer-wrap{padding:40px 20px;}
   .foot-top{flex-direction:column;}
@@ -990,7 +1008,7 @@ nav{
       <span class="tech-chip">SQLite</span>
       <span class="tech-chip">GPT-4o</span>
       <span class="tech-chip">Gemini</span>
-      <span class="tech-chip">Groq</span>
+      <span class="tech-chip">Groq AI</span>
       <span class="tech-chip">Server</span>
     </div>
   </div>
@@ -1032,7 +1050,7 @@ nav{
       <div class="proj-head">
         <div class="proj-icon" style="background:rgba(52,211,153,.08)">
           <!-- QO'LLANMA: 'logo.png' o'rniga o'z logotipingiz ssilkasini yozing -->
-          <img src="logo.png" alt="Logo">
+          <img src="logo1.png" alt="Logo">
         </div>
         <span class="proj-badge b-live" data-uz="Ishlamoqda" data-ru="Работает" data-en="Live">Ishlamoqda</span>
       </div>
@@ -1045,7 +1063,7 @@ nav{
       </div>
       <div class="proj-tags"><span class="ptag">aiogram 3</span><span class="ptag">FSM</span><span class="ptag">Sheets</span><span class="ptag">Web App</span><span class="ptag">Server</span></div>
       <!-- QO'LLANMA: href ga telegram bot ssilkasini qo'ying -->
-      <a href="https://t.me/SizningBotingizUsername" target="_blank" class="proj-btn">
+      <a href="https://t.me/rs_suhbatlarbot" target="_blank" class="proj-btn">
         <span data-uz="Sinab ko'rish" data-ru="Попробовать" data-en="Try it out">Sinab ko'rish</span> ↗
       </a>
     </div>
@@ -1054,18 +1072,18 @@ nav{
       <div class="proj-top-bar"></div>
       <div class="proj-head">
         <div class="proj-icon" style="background:rgba(30,79,216,.1)">
-          <img src="logo.png" alt="Logo">
+          <img src="logo2.png" alt="Logo">
         </div>
         <span class="proj-badge b-ai">AI Powered</span>
       </div>
       <h3 data-uz="Uyga vazifa boti" data-ru="Бот проверки ДЗ" data-en="Homework Bot">Uyga vazifa boti</h3>
-      <p data-uz="O'qituvchi/o'quvchi rollari. Groq/Gemini AI orqali rasmdan uyga vazifani tekshirish. SQLite baza." data-ru="Роли учитель/ученик. AI проверка ДЗ по фото. SQLite." data-en="Teacher/student roles. AI checks homework from photos. SQLite.">O'qituvchi/o'quvchi rollari. AI orqali rasmdan uyga vazifani tekshirish.</p>
+      <p data-uz="O'qituvchi/o'quvchi rollari. Groq AI/Gemini AI orqali rasmdan uyga vazifani tekshirish. SQLite baza." data-ru="Роли учитель/ученик. AI проверка ДЗ по фото. SQLite." data-en="Teacher/student roles. AI checks homework from photos. SQLite.">O'qituvchi/o'quvchi rollari. AI orqali rasmdan uyga vazifani tekshirish.</p>
       <div class="proj-nums">
-        <div><div class="pn-v">Groq</div><div class="pn-l">AI Engine</div></div>
+        <div><div class="pn-v">Groq AI</div><div class="pn-l">AI Engine</div></div>
         <div><div class="pn-v">2</div><div class="pn-l" data-uz="Rol" data-ru="Роли" data-en="Roles">Rol</div></div>
         <div><div class="pn-v">Auto</div><div class="pn-l" data-uz="Tekshiruv" data-ru="Проверка" data-en="Check">Tekshiruv</div></div>
       </div>
-      <div class="proj-tags"><span class="ptag">aiogram</span><span class="ptag">SQLite</span><span class="ptag">Groq</span><span class="ptag">Gemini</span></div>
+      <div class="proj-tags"><span class="ptag">aiogram</span><span class="ptag">SQLite</span><span class="ptag">Groq AI</span><span class="ptag">Gemini</span></div>
       <a href="https://t.me/SizningBotingizUsername" target="_blank" class="proj-btn">
         <span data-uz="Sinab ko'rish" data-ru="Попробовать" data-en="Try it out">Sinab ko'rish</span> ↗
       </a>
@@ -1076,7 +1094,7 @@ nav{
       <div>
         <div class="proj-head">
           <div class="proj-icon" style="background:rgba(252,211,77,.08)">
-            <img src="logo.png" alt="Logo">
+            <img src="logo3.png" alt="Logo">
           </div>
           <span class="proj-badge b-ecom">E-commerce</span>
         </div>
@@ -1201,9 +1219,9 @@ nav{
       <div class="srv-ico" style="background:rgba(30,79,216,.08)">🤖</div>
       <div class="srv-info">
         <h3>AI Assistant Bot</h3>
-        <p data-uz="GPT-4o, Gemini, Groq. Suhbat, tahlil, ovoz, rasm tahlili" data-ru="GPT-4o, Gemini, Groq. Диалог, анализ, голос, изображения" data-en="GPT-4o, Gemini, Groq. Chat, analysis, voice, images">GPT-4o, Gemini, Groq. Suhbat, tahlil, ovoz, rasm tahlili</p>
+        <p data-uz="GPT-4o, Gemini, Groq AI. Suhbat, tahlil, ovoz, rasm tahlili" data-ru="GPT-4o, Gemini, Groq AI. Диалог, анализ, голос, изображения" data-en="GPT-4o, Gemini, Groq AI. Chat, analysis, voice, images">GPT-4o, Gemini, Groq AI. Suhbat, tahlil, ovoz, rasm tahlili</p>
       </div>
-      <div class="srv-tags"><span class="stag">GPT-4o</span><span class="stag">Gemini</span><span class="stag">Groq</span></div>
+      <div class="srv-tags"><span class="stag">GPT-4o</span><span class="stag">Gemini</span><span class="stag">Groq AI</span></div>
       <div class="srv-arr">→</div>
     </div>
     <div class="srv">
@@ -1294,7 +1312,7 @@ nav{
     </div>
     <div class="bc">
       <div class="bc-logo">⚡</div>
-      <div class="bc-name">Groq AI</div>
+      <div class="bc-name">Groq AI AI</div>
       <div class="bc-desc">Ultra-tez AI inference</div>
     </div>
     <div class="bc">
