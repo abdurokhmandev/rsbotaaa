@@ -1,14 +1,4 @@
 {
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "X-Frame-Options", "value": "ALLOWALL" },
-        { "key": "Content-Security-Policy", "value": "frame-ancestors *" }
-      ]
-    }
-  ],
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -21,6 +11,10 @@
     {
       "source": "/marketingadmin",
       "destination": "/admin.html"
+    },
+    {
+      "source": "/",
+      "destination": "/portfolio.html"
     }
   ]
 }
