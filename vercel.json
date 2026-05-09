@@ -1,20 +1,30 @@
 {
-  "rewrites": [
+  "headers": [
     {
-      "source": "/api/:path*",
-      "destination": "https://botttttttt-production.up.railway.app/api/:path*"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "X-Frame-Options", "value": "ALLOWALL" },
+        { "key": "Content-Security-Policy", "value": "frame-ancestors *" }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://botttttttt-production.up.railway.app/api/$1"
     },
     {
-      "source": "/webappregister",
-      "destination": "/index.html"
+      "src": "/webappregister",
+      "dest": "/index.html"
     },
     {
-      "source": "/marketingadmin",
-      "destination": "/admin.html"
+      "src": "/marketingadmin",
+      "dest": "/admin.html"
     },
     {
-      "source": "/",
-      "destination": "/portfolio.html"
+      "src": "/",
+      "dest": "/portfolio.html"
     }
   ]
 }
