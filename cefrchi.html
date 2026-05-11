@@ -321,47 +321,73 @@
 
     <script>
         const tg = window.Telegram.WebApp;
+        
+        // Telegram Web App-ni tayyor holatga keltirish
+        tg.ready();
         tg.expand();
         tg.backgroundColor = "#0f172a";
         tg.headerColor = "#0f172a";
 
-        // AGAR WEB APP VA BOT BOSHQARUV SERVERNIZ ALOHIDA BO'LSA, 
-        // BU YERGA BOT BACKEND URL MANZILINI YOZING (oxirida / bo'lmasin)
-        // Masalan: "https://sizning-botingiz.up.railway.app"
-        const API_BASE = "https://web-production-69ee71.up.railway.app"; 
+        // API manzilini joriy domenga moslab olish
+        // Agar mahalliy ishlatayotgan bo'lsangiz, bu avtomatik ravishda joriy hostni oladi
+        const API_BASE = window.location.origin; 
 
         let allUsers = [];
 
         async function init() {
+            console.log("Initializing Admin Panel...");
+            const loader = document.getElementById('loader');
+            
             try {
+                // Timeout qo'shish (10 soniya)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
                 const res = await fetch(`${API_BASE}/api/admin/stats`, {
-                    headers: { 'X-Telegram-Init-Data': tg.initData }
+                    headers: { 'X-Telegram-Init-Data': tg.initData },
+                    signal: controller.signal
                 });
                 
+                clearTimeout(timeoutId);
+                
                 if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error || "Ulanishda xatolik");
+                    if (res.status === 403) {
+                        throw new Error("Sizda admin huquqi yo'q yoki Telegram orqali ochilmagan!");
+                    }
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.error || `Server xatosi: ${res.status}`);
                 }
 
                 const data = await res.json();
+                console.log("Data received:", data);
                 
-                document.getElementById('stat-users').innerText = data.total_users;
-                document.getElementById('stat-tests').innerText = data.total_tests;
+                document.getElementById('stat-users').innerText = data.total_users || 0;
+                document.getElementById('stat-tests').innerText = data.total_tests || 0;
                 document.getElementById('stat-band').innerText = (data.avg_band || 0).toFixed(1);
 
-                allUsers = data.recent_users;
+                allUsers = data.recent_users || [];
                 renderUsers(allUsers);
-                renderChart(data.daily_activity);
+                
+                if (data.daily_activity && data.daily_activity.length > 0) {
+                    renderChart(data.daily_activity);
+                }
 
-                document.getElementById('loader').classList.add('hidden');
+                loader.classList.add('hidden');
             } catch (e) {
-                console.error(e);
-                document.getElementById('loader').innerHTML = `
-                    <div style="text-align:center; padding:20px;">
-                        <p style="color:var(--accent); font-weight:bold; margin-bottom:10px;">Xatolik yuz berdi!</p>
-                        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">${e.message}</p>
+                console.error("Init error:", e);
+                let errorMsg = e.message;
+                if (e.name === 'AbortError') errorMsg = "Server juda uzoq javob berdi (Timeout)";
+                
+                loader.innerHTML = `
+                    <div style="text-align:center; padding:20px; max-width: 80%;">
+                        <p style="color:var(--accent); font-weight:bold; margin-bottom:10px; font-size:18px;">Xatolik!</p>
+                        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">${errorMsg}</p>
                         <button class="btn" onclick="location.reload()">Qayta urinish</button>
-                        <p style="font-size:10px; color:var(--text-muted); margin-top:20px;">Eslatma: Panelni faqat Telegram orqali oching!</p>
+                        <p style="font-size:10px; color:var(--text-muted); margin-top:20px;">
+                            Tekshiring: <br>
+                            1. Bot .env faylida ID-ingiz ADMIN_IDS ichida bormi? <br>
+                            2. Server ishlayaptimi?
+                        </p>
                     </div>
                 `;
             }
