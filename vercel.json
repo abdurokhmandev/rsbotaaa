@@ -27,8 +27,12 @@
       "dest": "/portfolio.html"
     },
     {
-      "src": "/cefrchi",
-      "dest": "/cefrchi.html"
+      "src": "/admin",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/admin-login",
+      "dest": "/login.html"
     }
   ]
 }
