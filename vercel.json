@@ -16,7 +16,7 @@
     },
     {
       "src": "/webappregister",
-      "dest": "/marketing"
+      "dest": "/marketing.html"
     },
     {
       "src": "/marketingadmin",
