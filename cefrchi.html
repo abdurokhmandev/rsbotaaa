@@ -19,12 +19,7 @@
             --text-muted: #94a3b8;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -50,9 +45,7 @@
             margin-bottom: 5px;
         }
 
-        .container {
-            padding: 20px;
-        }
+        .container { padding: 20px; }
 
         .stats-grid {
             display: grid;
@@ -71,7 +64,6 @@
         }
 
         .stat-card:active { transform: scale(0.95); }
-
         .stat-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
         .stat-value { font-size: 22px; font-weight: 700; color: var(--primary); }
 
@@ -83,17 +75,13 @@
             margin-bottom: 25px;
         }
 
-        .search-box {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
+        .search-box { margin-bottom: 20px; position: relative; }
         .search-box input {
             width: 100%;
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 14px 45px 14px 20px;
+            padding: 14px 20px;
             color: var(--text);
             font-family: inherit;
         }
@@ -195,22 +183,15 @@
             font-weight: 700;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
         }
 
         #loader {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border: 5px solid rgba(99, 102, 241, 0.1);
             border-top-color: var(--primary);
             border-radius: 50%;
@@ -218,8 +199,14 @@
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .hidden { display: none; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; margin-left: 5px; }
+        .form-group input, .form-group select {
+            width: 100%; background: var(--card); color: white; padding: 14px;
+            border-radius: 16px; border: 1px solid var(--border);
+        }
     </style>
 </head>
 <body>
@@ -247,8 +234,8 @@
                     <p id="stat-band" class="stat-value">...</p>
                 </div>
                 <div class="stat-card">
-                    <p class="stat-label">Active Users</p>
-                    <p class="stat-value" style="color: #10b981;">92%</p>
+                    <p class="stat-label">Active Status</p>
+                    <p class="stat-value" style="color: #10b981;">Online</p>
                 </div>
             </div>
 
@@ -261,31 +248,28 @@
         <!-- Users -->
         <div id="tab-users" class="tab-content">
             <div class="search-box">
-                <input type="text" id="user-search" placeholder="Qidirish (ism yoki username)..." oninput="filterUsers()">
+                <input type="text" id="user-search" placeholder="Qidirish..." oninput="filterUsers()">
             </div>
-            <div id="user-list">
-                <!-- Users inject -->
-            </div>
+            <div id="user-list"></div>
         </div>
 
         <!-- Broadcast -->
         <div id="tab-broadcast" class="tab-content">
             <h3 style="margin-bottom: 20px;">Xabar yuborish</h3>
-            <textarea id="msg-text" rows="8" placeholder="Xabar matnini kiriting... (HTML qo'llab-quvvatlanadi)"></textarea>
+            <textarea id="msg-text" rows="8" placeholder="Xabar matnini kiriting..."></textarea>
             <button class="btn" onclick="sendBroadcast()">Hammaga yuborish</button>
         </div>
-    </div>
 
         <!-- Topics -->
         <div id="tab-topics" class="tab-content">
             <h3 style="margin-bottom: 20px;">Yangi Topik qo'shish</h3>
-            <div class="form-group" style="margin-bottom: 15px;">
+            <div class="form-group">
                 <label>Topik nomi (English)</label>
                 <input type="text" id="topic-name" placeholder="Masalan: Your favorite book">
             </div>
-            <div class="form-group" style="margin-bottom: 15px;">
+            <div class="form-group">
                 <label>Qism (Part)</label>
-                <select id="topic-part" style="width: 100%; background: var(--card); color: white; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                <select id="topic-part">
                     <option value="1">Part 1</option>
                     <option value="2">Part 2</option>
                     <option value="3">Part 3</option>
@@ -294,72 +278,56 @@
             <button class="btn" onclick="addTopic()" style="margin-bottom: 30px;">Qo'shish</button>
 
             <h3 style="margin-bottom: 15px;">Mavjud Topiklar</h3>
-            <div id="topic-list">
-                <!-- Topics inject -->
-            </div>
+            <div id="topic-list"></div>
         </div>
     </div>
 
     <nav class="nav-bar">
         <a href="javascript:void(0)" class="nav-item active" onclick="showTab('dashboard', this)">
-            <div class="nav-icon icon-home"></div>
-            <span>Asosiy</span>
+            <div class="nav-icon icon-home"></div><span>Asosiy</span>
         </a>
         <a href="javascript:void(0)" class="nav-item" onclick="showTab('users', this)">
-            <div class="nav-icon icon-users"></div>
-            <span>A'zolar</span>
+            <div class="nav-icon icon-users"></div><span>A'zolar</span>
         </a>
         <a href="javascript:void(0)" class="nav-item" onclick="showTab('topics', this)">
-            <div class="nav-icon icon-topics"></div>
-            <span>Topiklar</span>
+            <div class="nav-icon icon-topics"></div><span>Topiklar</span>
         </a>
         <a href="javascript:void(0)" class="nav-item" onclick="showTab('broadcast', this)">
-            <div class="nav-icon icon-send"></div>
-            <span>Xabar</span>
+            <div class="nav-icon icon-send"></div><span>Xabar</span>
         </a>
     </nav>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        
-        // Telegram Web App-ni tayyor holatga keltirish
-        tg.ready();
-        tg.expand();
-        tg.backgroundColor = "#0f172a";
-        tg.headerColor = "#0f172a";
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+        if (tg) { tg.ready(); tg.expand(); }
 
-        // API manzilini joriy domenga moslab olish
-        // Agar mahalliy ishlatayotgan bo'lsangiz, bu avtomatik ravishda joriy hostni oladi
-        const API_BASE = window.location.origin; 
-
+        const API_BASE = window.location.origin;
         let allUsers = [];
 
-        async function init() {
-            console.log("Initializing Admin Panel...");
+        function showError(msg) {
             const loader = document.getElementById('loader');
-            
-            try {
-                // Timeout qo'shish (10 soniya)
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+            loader.innerHTML = `
+                <div style="text-align:center; padding:20px;">
+                    <p style="color:var(--accent); font-weight:bold; margin-bottom:10px;">Xatolik!</p>
+                    <p style="font-size:14px; color:var(--text-muted);">${msg}</p>
+                    <button class="btn" onclick="location.reload()" style="margin-top:20px; width:auto; padding:10px 30px;">Qayta urinish</button>
+                </div>
+            `;
+        }
 
+        async function init() {
+            if (!tg || !tg.initData) {
+                showError("Telegram ma'lumotlari topilmadi. Panelni Telegram orqali oching.");
+                return;
+            }
+
+            try {
                 const res = await fetch(`${API_BASE}/api/admin/stats`, {
-                    headers: { 'X-Telegram-Init-Data': tg.initData },
-                    signal: controller.signal
+                    headers: { 'X-Telegram-Init-Data': tg.initData }
                 });
                 
-                clearTimeout(timeoutId);
-                
-                if (!res.ok) {
-                    if (res.status === 403) {
-                        throw new Error("Sizda admin huquqi yo'q yoki Telegram orqali ochilmagan!");
-                    }
-                    const err = await res.json().catch(() => ({}));
-                    throw new Error(err.error || `Server xatosi: ${res.status}`);
-                }
-
+                if (!res.ok) throw new Error("Siz admin emassiz yoki serverda xatolik.");
                 const data = await res.json();
-                console.log("Data received:", data);
                 
                 document.getElementById('stat-users').innerText = data.total_users || 0;
                 document.getElementById('stat-tests').innerText = data.total_tests || 0;
@@ -367,38 +335,19 @@
 
                 allUsers = data.recent_users || [];
                 renderUsers(allUsers);
-                
-                if (data.daily_activity && data.daily_activity.length > 0) {
-                    renderChart(data.daily_activity);
-                }
+                if (data.daily_activity) renderChart(data.daily_activity);
 
-                loader.classList.add('hidden');
-            } catch (e) {
-                console.error("Init error:", e);
-                let errorMsg = e.message;
-                if (e.name === 'AbortError') errorMsg = "Server juda uzoq javob berdi (Timeout)";
-                
-                loader.innerHTML = `
-                    <div style="text-align:center; padding:20px; max-width: 80%;">
-                        <p style="color:var(--accent); font-weight:bold; margin-bottom:10px; font-size:18px;">Xatolik!</p>
-                        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">${errorMsg}</p>
-                        <button class="btn" onclick="location.reload()">Qayta urinish</button>
-                        <p style="font-size:10px; color:var(--text-muted); margin-top:20px;">
-                            Tekshiring: <br>
-                            1. Bot .env faylida ID-ingiz ADMIN_IDS ichida bormi? <br>
-                            2. Server ishlayaptimi?
-                        </p>
-                    </div>
-                `;
-            }
+                document.getElementById('loader').classList.add('hidden');
+            } catch (e) { showError(e.message); }
         }
 
         function renderUsers(users) {
             const list = document.getElementById('user-list');
+            if (!list) return;
             list.innerHTML = users.map(u => `
                 <div class="user-card">
                     <div class="user-info">
-                        <h4>${u.full_name}</h4>
+                        <h4>${u.full_name || 'Noma\'lum'}</h4>
                         <p>@${u.username || '—'} | ${u.level || 'B1'}</p>
                     </div>
                     <div class="user-badge">${u.exam || 'CEFR'}</div>
@@ -409,7 +358,7 @@
         function filterUsers() {
             const q = document.getElementById('user-search').value.toLowerCase();
             const filtered = allUsers.filter(u => 
-                u.full_name.toLowerCase().includes(q) || 
+                (u.full_name && u.full_name.toLowerCase().includes(q)) || 
                 (u.username && u.username.toLowerCase().includes(q))
             );
             renderUsers(filtered);
@@ -420,37 +369,35 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(`tab-${id}`).classList.add('active');
             el.classList.add('active');
-            tg.HapticFeedback.impactOccurred('medium');
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
         }
 
         async function sendBroadcast() {
             const text = document.getElementById('msg-text').value;
-            if(!text) return tg.showAlert("Matn kiriting!");
+            if(!text) return alert("Matn kiriting!");
             
-            tg.showConfirm("Haqiqatan ham barcha foydalanuvchilarga xabar yubormoqchimisiz?", async (ok) => {
-                if(ok) {
-                    try {
-                        const res = await fetch(`${API_BASE}/api/admin/broadcast`, {
-                            method: 'POST',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'X-Telegram-Init-Data': tg.initData 
-                            },
-                            body: JSON.stringify({ text })
-                        });
-                        const data = await res.json();
-                        tg.showAlert(`Xabar yuborildi! Jami: ${data.count} kishi.`);
-                        document.getElementById('msg-text').value = "";
-                    } catch(e) {
-                        tg.showAlert("Xatolik!");
-                    }
-                }
-            });
+            const action = async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/api/admin/broadcast`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': tg.initData },
+                        body: JSON.stringify({ text })
+                    });
+                    const data = await res.json();
+                    alert(`Xabar yuborildi! Jami: ${data.count}`);
+                    document.getElementById('msg-text').value = "";
+                } catch(e) { alert("Xatolik!"); }
+            };
+
+            if (tg) {
+                tg.showConfirm("Xabar yuborilsinmi?", (ok) => { if(ok) action(); });
+            } else if (confirm("Xabar yuborilsinmi?")) { action(); }
         }
 
         function renderChart(data) {
-            const ctx = document.getElementById('activityChart').getContext('2d');
-            new Chart(ctx, {
+            const canvas = document.getElementById('activityChart');
+            if (!canvas) return;
+            new Chart(canvas.getContext('2d'), {
                 type: 'line',
                 data: {
                     labels: data.map(d => d.date),
@@ -458,10 +405,7 @@
                         data: data.map(d => d.count),
                         borderColor: '#6366f1',
                         backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 0
+                        fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0
                     }]
                 },
                 options: {
@@ -478,47 +422,41 @@
         async function addTopic() {
             const name = document.getElementById('topic-name').value;
             const part = document.getElementById('topic-part').value;
-            if(!name) return tg.showAlert("Nomini kiriting!");
+            if(!name) return alert("Nomini kiriting!");
 
             try {
                 const res = await fetch(`${API_BASE}/api/admin/topics`, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-Telegram-Init-Data': tg.initData 
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': tg.initData },
                     body: JSON.stringify({ topic: name, part: parseInt(part) })
                 });
                 if(res.ok) {
-                    tg.showAlert("Topik qo'shildi!");
+                    alert("Topik qo'shildi!");
                     document.getElementById('topic-name').value = "";
                     fetchTopics();
                 }
-            } catch(e) { tg.showAlert("Xatolik!"); }
+            } catch(e) { alert("Xatolik!"); }
         }
 
         async function fetchTopics() {
+            if (!tg || !tg.initData) return;
             try {
                 const res = await fetch(`${API_BASE}/api/admin/topics`, {
                     headers: { 'X-Telegram-Init-Data': tg.initData }
                 });
                 const data = await res.json();
                 const list = document.getElementById('topic-list');
+                if (!list) return;
                 list.innerHTML = data.map(t => `
                     <div class="user-card">
-                        <div class="user-info">
-                            <h4>${t.topic}</h4>
-                            <p>Part ${t.part}</p>
-                        </div>
+                        <div class="user-info"><h4>${t.topic}</h4><p>Part ${t.part}</p></div>
                     </div>
                 `).join('');
             } catch(e) {}
         }
 
-        window.onload = () => {
-            init();
-            fetchTopics();
-        };
+        init();
+        fetchTopics();
     </script>
 </body>
 </html>
