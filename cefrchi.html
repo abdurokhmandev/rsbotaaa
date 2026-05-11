@@ -344,31 +344,44 @@
                 const response = await fetch(`${API_BASE}/api/admin/stats`, {
                     headers: { 'X-Telegram-Init-Data': tg.initData }
                 });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: "Server error " + response.status }));
+                    throw new Error(errorData.error || "Failed to load data");
+                }
+
                 const data = await response.json();
                 
                 document.getElementById('stat-users').innerText = data.total_users;
                 document.getElementById('stat-tests').innerText = data.total_tests;
-                document.getElementById('stat-band').innerText = data.avg_band.toFixed(1);
+                document.getElementById('stat-band').innerText = (data.avg_band || 0).toFixed(1);
 
                 initChart(data.daily_activity);
                 
                 const userList = document.getElementById('user-list');
-                userList.innerHTML = data.recent_users.map(u => `
+                userList.innerHTML = data.recent_users.length ? data.recent_users.map(u => `
                     <div class="user-item">
                         <div class="user-info">
-                            <h4>${u.full_name}</h4>
+                            <h4>${u.full_name || 'No Name'}</h4>
                             <p>@${u.username || 'no_username'}</p>
                         </div>
-                        <div class="user-status">${u.level} | ${u.streak}🔥</div>
+                        <div class="user-status">${u.level || 'B1'} | ${u.streak || 0}🔥</div>
                     </div>
-                `).join('');
+                `).join('') : '<p style="text-align:center; padding:20px; color:var(--text-muted);">No users yet.</p>';
 
                 document.getElementById('loader').classList.add('hidden');
             } catch (err) {
                 console.error(err);
-                tg.showAlert("Failed to load data: " + err.message);
+                document.getElementById('loader').innerHTML = `
+                    <div style="text-align:center; padding:20px;">
+                        <p style="color:var(--accent); font-weight:bold; margin-bottom:10px;">Connection Error</p>
+                        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">${err.message}</p>
+                        <button class="btn" onclick="location.reload()">Retry</button>
+                    </div>
+                `;
             }
         }
+
 
         function initChart(activityData) {
             const ctx = document.getElementById('activityChart').getContext('2d');
