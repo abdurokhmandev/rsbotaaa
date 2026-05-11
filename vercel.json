@@ -20,7 +20,7 @@
     },
     {
       "src": "/marketingadmin",
-      "dest": "/admin.html"
+      "dest": "/marketingadmin.html"
     },
     {
       "src": "/",
