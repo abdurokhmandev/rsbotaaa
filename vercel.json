@@ -27,12 +27,16 @@
       "dest": "/portfolio.html"
     },
     {
-      "src": "/cefrchi-admin",
-      "dest": "https://web-production-69ee71.up.railway.app/admin.html"
+    "source": "/cefrchi-admin",
+      "destination": "https://web-production-69ee71.up.railway.app/cefrchi-admin"
     },
     {
-      "src": "/cefrchi-login",
-      "dest": "https://web-production-69ee71.up.railway.app/login.html"
+      "source": "/cefrchi_login",
+      "destination": "https://web-production-69ee71.up.railway.app/cefrchi_login"
+    },
+    {
+      "source": "/cefrchi-admin/:path*",
+      "destination": "https://web-production-69ee71.up.railway.app/cefrchi-admin/:path*"
     }
   ]
 }
