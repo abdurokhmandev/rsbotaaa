@@ -267,6 +267,59 @@ textarea{resize:vertical;}
 
 .section-divider{height:1px;background:linear-gradient(to right,var(--border),transparent);margin:6px 0 20px;}
 
+/* ═══════════ MODAL ═══════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;
+}
+.modal-overlay.active{display:flex;}
+.modal{
+  background:var(--s1);border:1px solid var(--border);border-radius:24px;
+  width:100%;max-width:500px;padding:32px;position:relative;animation:modalIn 0.3s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+.modal-close{
+  position:absolute;top:20px;right:20px;width:32px;height:32px;
+  border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.modal-header{text-align:center;margin-bottom:24px;}
+.modal-avatar{
+  width:80px;height:80px;border-radius:24px;margin:0 auto 16px;
+  border:2px solid var(--accent);padding:4px;background:var(--s2);
+}
+.modal-avatar img{width:100%;height:100%;border-radius:18px;object-fit:cover;}
+.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;}
+.modal-subtitle{color:var(--muted);font-size:14px;}
+
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+.detail-item{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px solid var(--border);}
+.detail-label{font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;letter-spacing:1px;}
+.detail-val{font-size:13px;font-weight:600;}
+
+/* ═══════════ TARGET INDICATOR ═══════════ */
+.target-box{
+  background:rgba(200,242,100,0.1);border:1px solid rgba(200,242,100,0.2);
+  padding:12px 16px;border-radius:12px;margin-bottom:20px;
+  display:none;align-items:center;justify-content:space-between;
+}
+.target-box.active{display:flex;}
+.target-info{display:flex;align-items:center;gap:10px;}
+.target-name{font-weight:700;color:var(--accent);}
+.target-clear{cursor:pointer;color:var(--accent3);font-size:18px;}
+
+/* ═══════════ TABLE ACTIONS ═══════════ */
+.action-btn{
+  width:32px;height:32px;border-radius:8px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.03);color:var(--muted);
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;
+}
+.action-btn:hover{border-color:var(--accent);color:var(--accent);}
+.action-btn.msg:hover{border-color:var(--accent2);color:var(--accent2);}
+
+.user-photo{width:32px;height:32px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+
 /* ═══════════ RESPONSIVE ═══════════ */
 
 /* Tablet: 768–1024px */
@@ -431,10 +484,9 @@ textarea{resize:vertical;}
           <thead>
             <tr>
               <th>Foydalanuvchi</th>
-              <th>Username</th>
-              <th>Exam</th>
-              <th>Daraja</th>
+              <th>Ma'lumot</th>
               <th>Streak</th>
+              <th>Amallar</th>
             </tr>
           </thead>
           <tbody id="usersList"></tbody>
@@ -499,10 +551,22 @@ textarea{resize:vertical;}
     <div class="bc-wrap">
       <div class="card">
         <div class="card-title" style="margin-bottom:4px;">Broadcast Xabar</div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Filtrlar bo'yicha foydalanuvchilarga xabar yuborish</p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Foydalanuvchilarga xabar yuborish</p>
+        
+        <div id="target-indicator" class="target-box">
+          <div class="target-info">
+            <span style="font-size:16px;">👤</span>
+            <div>
+              <div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Yuborilmoqda:</div>
+              <div class="target-name" id="target-name">—</div>
+            </div>
+          </div>
+          <div class="target-clear" onclick="clearTarget()">×</div>
+        </div>
+
         <div class="section-divider"></div>
-        <div class="form-group">
-          <label>Kimlar?</label>
+        <div class="form-group" id="broadcast-filters">
+          <label>Kimlar? (Filtrlar)</label>
           <div style="display:flex;gap:10px;flex-wrap:wrap;" class="filter-row">
             <select class="chip-select" id="b-exam">
               <option value="">Barcha exam</option>
@@ -531,9 +595,42 @@ textarea{resize:vertical;}
 
 </main>
 
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-close" onclick="closeModal()">×</div>
+    <div class="modal-header">
+      <div class="modal-avatar" id="m-avatar">
+        <img src="" alt="" id="m-img" onerror="this.src='https://ui-avatars.com/api/?name=?&background=111425&color=5a6180'">
+      </div>
+      <div class="modal-title" id="m-name">Foydalanuvchi</div>
+      <div class="modal-subtitle" id="m-username">@username</div>
+    </div>
+    
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-label">ID</div><div class="detail-val" id="m-id">—</div></div>
+      <div class="detail-item"><div class="detail-label">Imtihon</div><div class="detail-val" id="m-exam">—</div></div>
+      <div class="detail-item"><div class="detail-label">Daraja</div><div class="detail-val" id="m-level">—</div></div>
+      <div class="detail-item"><div class="detail-label">Yosh</div><div class="detail-val" id="m-age">—</div></div>
+      <div class="detail-item"><div class="detail-label">Ro'yxatdan o'tdi</div><div class="detail-val" id="m-date">—</div></div>
+      <div class="detail-item"><div class="detail-label">Manba</div><div class="detail-val" id="m-source">—</div></div>
+    </div>
+    
+    <div class="form-group" style="margin-top:20px;">
+      <label>Qiziqishlar</label>
+      <div class="detail-item" style="padding:14px;" id="m-interests">—</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;">
+      <a id="m-link" href="#" target="_blank" class="btn" style="text-align:center;text-decoration:none;background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--border);">Profilga o'tish</a>
+      <button class="btn btn-primary" onclick="messageFromModal()">Xabar yuborish</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const API_BASE='https://web-production-69ee71.up.railway.app';
+const API_BASE=''; // Relative path is safer for various deployments
 let usersData=[];
+let selectedTarget=null;
 
 // ── Sidebar toggle ──
 function toggleSidebar(){
@@ -588,21 +685,78 @@ function renderUsers(users){
     <tr>
       <td>
         <div class="user-cell">
-          <div class="avatar" style="background:${COLORS[i%COLORS.length]}18;color:${COLORS[i%COLORS.length]};border-color:${COLORS[i%COLORS.length]}30;">
-            ${(u.full_name||'?')[0].toUpperCase()}
-          </div>
+          <img class="user-photo" src="/api/admin/user-photo/${u.tg_id}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name||'?')}&background=${COLORS[i%COLORS.length].replace('#','')}&color=fff'">
           <div>
             <div style="font-weight:600;font-size:13px;">${u.full_name||'Nomsiz'}</div>
             <div class="username">@${u.username||'—'}</div>
           </div>
         </div>
       </td>
-      <td><span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);">@${u.username||'—'}</span></td>
-      <td><span class="badge ${u.exam==='IELTS'?'b-ielts':u.exam==='CEFR'?'b-cefr':'b-all'}">${u.exam||'ALL'}</span></td>
-      <td><span class="level-pill">${u.level||'B1'}</span></td>
+      <td>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="badge ${u.exam==='IELTS'?'b-ielts':u.exam==='CEFR'?'b-cefr':'b-all'}">${u.exam||'ALL'}</span>
+          <span class="level-pill">${u.level||'B1'}</span>
+        </div>
+      </td>
       <td><div class="streak">🔥 ${u.streak||0}</div></td>
+      <td>
+        <div style="display:flex;gap:8px;">
+          <div class="action-btn" title="Batafsil" onclick="showUserDetails(${u.tg_id})">ℹ</div>
+          <div class="action-btn msg" title="Xabar yuborish" onclick="selectUserForBroadcast(${u.tg_id}, '${u.full_name.replace(/'/g, "\\'")}')">✉</div>
+          <a href="${u.username?'https://t.me/'+u.username:'tg://user?id='+u.tg_id}" target="_blank" class="action-btn" title="Telegramda ochish">↗</a>
+        </div>
+      </td>
     </tr>
   `).join('');
+}
+
+function showUserDetails(id){
+  const u = usersData.find(user => user.tg_id == id);
+  if(!u) return;
+  
+  document.getElementById('m-img').src = `/api/admin/user-photo/${u.tg_id}`;
+  document.getElementById('m-name').innerText = u.full_name || 'Nomsiz';
+  document.getElementById('m-username').innerText = u.username ? '@'+u.username : 'Username yo\'q';
+  document.getElementById('m-id').innerText = u.tg_id;
+  document.getElementById('m-exam').innerText = u.exam || 'IELTS';
+  document.getElementById('m-level').innerText = u.level || 'B1';
+  document.getElementById('m-age').innerText = u.age || 'Noma\'lum';
+  document.getElementById('m-date').innerText = u.registered_at ? u.registered_at.split(' ')[0] : 'Noma\'lum';
+  document.getElementById('m-source').innerText = u.source || 'To\'g'ridan-to'g'ri';
+  document.getElementById('m-interests').innerText = u.interests || 'Ko\'rsatilmagan';
+  document.getElementById('m-link').href = u.username ? 'https://t.me/'+u.username : 'tg://user?id='+u.tg_id;
+  
+  const modal = document.getElementById('userModal');
+  modal.dataset.id = id;
+  modal.dataset.name = u.full_name;
+  modal.classList.add('active');
+}
+
+function closeModal(){
+  document.getElementById('userModal').classList.remove('active');
+}
+
+function messageFromModal(){
+  const id = document.getElementById('userModal').dataset.id;
+  const name = document.getElementById('userModal').dataset.name;
+  closeModal();
+  selectUserForBroadcast(id, name);
+}
+
+function selectUserForBroadcast(id, name){
+  selectedTarget = id;
+  document.getElementById('target-name').innerText = name;
+  document.getElementById('target-indicator').classList.add('active');
+  document.getElementById('broadcast-filters').style.opacity = '0.4';
+  document.getElementById('broadcast-filters').style.pointerEvents = 'none';
+  switchTab('broadcast', document.querySelector('.nav-item[onclick*="broadcast"]'));
+}
+
+function clearTarget(){
+  selectedTarget = null;
+  document.getElementById('target-indicator').classList.remove('active');
+  document.getElementById('broadcast-filters').style.opacity = '1';
+  document.getElementById('broadcast-filters').style.pointerEvents = 'all';
 }
 
 function filterUsers(){
@@ -645,16 +799,30 @@ async function saveTopic(){
 
 async function sendBroadcast(){
   const text=document.getElementById('b-text').value.trim();
-  if(!text||!confirm("Filtrlangan userlarga xabar yuborilsinmi?"))return;
+  if(!text) return alert('Xabar matnini kiriting');
+  
+  const targetText = selectedTarget ? "Tanlangan foydalanuvchiga" : "Filtrlangan barcha userlarga";
+  if(!confirm(targetText + " xabar yuborilsinmi?")) return;
+
   const btn=document.getElementById('b-btn');
   btn.innerText='▷  Yuborilmoqda...';btn.disabled=true;
   try{
     const res=await apiRequest('/api/admin/broadcast',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({text,filters:{exam:document.getElementById('b-exam').value,level:document.getElementById('b-level').value}})
+      body:JSON.stringify({
+        text,
+        target_user_id: selectedTarget,
+        filters:{
+          exam:document.getElementById('b-exam').value,
+          level:document.getElementById('b-level').value
+        }
+      })
     });
-    if(res&&res.status==='ok'){alert(`✅ Yuborildi! ${res.count} ta user`);}
+    if(res&&res.status==='ok'){
+      alert(`✅ Yuborildi! ${res.count} ta user`);
+      if(selectedTarget) clearTarget();
+    }
     else{alert('❌ Xatolik: '+(res?.error||'Noma\'lum'));}
   }catch(e){alert('❌ Server xatosi');}
   finally{btn.innerText='▷  Xabarni Yuborish';btn.disabled=false;}
