@@ -403,7 +403,7 @@ textarea{resize:vertical;}
   <div class="nav-item" onclick="switchTab('broadcast', this)"><span>📢</span> Broadcast</div>
 
   <div class="sidebar-footer">
-    <a href="login.html">⎋ &nbsp;Logout</a>
+    <a href="/cefrchi_login">⎋ &nbsp;Logout</a>
   </div>
 </aside>
 
@@ -667,8 +667,8 @@ textarea{resize:vertical;}
 <script>
 // ── CONFIG ──
 const API_BASE = (window.location.protocol === 'file:') 
-  ? 'https://web-production-69ee71.up.railway.app' 
-  : '';
+  ? 'https://web-production-69ee71.up.railway.app/cefrchi-admin' 
+  : '/cefrchi-admin';
 const API_TIMEOUT = 5000;
 
 let usersData = [];
