@@ -27,12 +27,12 @@
       "dest": "/portfolio.html"
     },
     {
-      "src": "/admin",
-      "dest": "/admin.html"
+      "src": "/cefrchi-admin",
+      "dest": "https://web-production-69ee71.up.railway.app/admin.html"
     },
     {
-      "src": "/admin-login",
-      "dest": "/login.html"
+      "src": "/cefrchi-login",
+      "dest": "https://web-production-69ee71.up.railway.app/login.html"
     }
   ]
 }
