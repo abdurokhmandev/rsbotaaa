@@ -9,25 +9,13 @@
       ]
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "https://botttttttt-production.up.railway.app/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://botttttttt-production.up.railway.app/api/:path*"
     },
     {
-      "src": "/webappregister",
-      "dest": "/marketing.html"
-    },
-    {
-      "src": "/marketingadmin",
-      "dest": "/marketingadmin.html"
-    },
-    {
-      "src": "/",
-      "dest": "/portfolio.html"
-    },
-    {
-    "source": "/cefrchi-admin",
+      "source": "/cefrchi-admin",
       "destination": "https://web-production-69ee71.up.railway.app/cefrchi-admin"
     },
     {
@@ -37,6 +25,18 @@
     {
       "source": "/cefrchi-admin/:path*",
       "destination": "https://web-production-69ee71.up.railway.app/cefrchi-admin/:path*"
+    },
+    {
+      "source": "/webappregister",
+      "destination": "/marketing.html"
+    },
+    {
+      "source": "/marketingadmin",
+      "destination": "/marketingadmin.html"
+    },
+    {
+      "source": "/",
+      "destination": "/portfolio.html"
     }
   ]
 }
