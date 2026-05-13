@@ -290,36 +290,37 @@
     <form id="form" novalidate>
 
       <div class="field" id="f-name">
-        <label for="name">Ism-Familiya:</label>
+        <label for="name">Ism Familiya</label>
         <div class="input-wrap">
           <input type="text" id="name" placeholder="Masalan: Abdulloh Rahimov" autocomplete="off" autocorrect="off" autocapitalize="words">
         </div>
         <span class="error-msg" id="e-name">Ism va familiyani to'liq kiriting (kamida 2 so'z)</span>
       </div>
-<br>
+
       <div class="field" id="f-phone">
-        <label for="phone">Telefon raqam:</label>
+        <label for="phone">Telefon raqam</label>
         <div class="input-wrap">
           <input type="tel" id="phone" placeholder="+998 90 123 45 67" maxlength="17" autocomplete="tel" inputmode="tel">
         </div>
         <span class="error-msg" id="e-phone">To'g'ri telefon raqam kiriting (+998XXXXXXXXX)</span>
       </div>
-<br>
+      <br>
       <div class="field" id="f-grade">
         <label for="grade">Farzandingiz nechanchi sinfda o'qiydi?</label>
         <div class="select-wrap">
           <select id="grade" class="placeholder-active">
             <option value="">Sinfni tanlang</option>
-            <option>1-4 sinf</option>
-            <option>5-8 sinf</option>
-            <option>9-11 sinf</option>
-            <option>Boshqa</option>
+            <option>1-sinf</option><option>2-sinf</option>
+            <option>3-sinf</option><option>4-sinf</option>
+            <option>5-sinf</option><option>6-sinf</option>
+            <option>7-sinf</option><option>8-sinf</option>
+            <option>9-sinf</option><option>10-sinf</option>
+            <option>11-sinf</option>
           </select>
         </div>
         <span class="error-msg" id="e-grade">Sinfni tanlash shart</span>
       </div>
-        <br>
-        
+
       <div class="field" id="f-district">
         <label for="district">Qayerda yashaysiz?</label>
         <div class="select-wrap">
@@ -341,7 +342,7 @@
         </div>
         <span class="error-msg" id="e-district">Hududni tanlash shart</span>
       </div>
-        <br>
+
       <div class="field" id="f-source">
         <label for="source">Biz haqimizda qayerdan bildingiz?</label>
         <div class="select-wrap">
@@ -506,7 +507,7 @@
       source:   sourceSel.value,
     };
 
-    fetch('https://botttttttt-production.up.railway.app/api/submit', {
+    fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
