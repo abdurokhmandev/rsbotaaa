@@ -15,6 +15,14 @@
       "destination": "https://botttttttt-production.up.railway.app/api/:path*"
     },
     {
+      "source": "/admin",
+      "destination": "https://botttttttt-production.up.railway.app/admin"
+    },
+    {
+      "source": "/admin.html",
+      "destination": "https://botttttttt-production.up.railway.app/admin"
+    },
+    {
       "source": "/cefrchi-admin",
       "destination": "https://web-production-69ee71.up.railway.app/cefrchi-admin"
     },
@@ -30,7 +38,6 @@
       "source": "/webappregister",
       "destination": "/marketing.html"
     },
-
     {
       "source": "/",
       "destination": "/portfolio.html"
