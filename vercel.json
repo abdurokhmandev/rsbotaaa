@@ -30,10 +30,7 @@
       "source": "/webappregister",
       "destination": "/marketing.html"
     },
-    {
-      "source": "/marketingadmin",
-      "destination": "/marketingadmin.html"
-    },
+
     {
       "source": "/",
       "destination": "/portfolio.html"
