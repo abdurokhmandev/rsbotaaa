@@ -39,8 +39,8 @@
       "destination": "/marketing.html"
     },
     {
-      "source": "/",
-      "destination": "/portfolio.html"
+      "source": "/marketingadmin",
+      "destination": "/marketingadmin.html"
     }
   ]
 }
